@@ -17,7 +17,11 @@ public class LoadBuffer {
     private MemoryInterface memInterface;
 
     public LoadBuffer(Controller controller) {
+<<<<<<< HEAD
         buffer = new int [MAX_CAPACITY];
+=======
+        buffer = new int[MAX_CAPACITY];
+>>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
         for (int i = 0; i < MAX_CAPACITY; i++) {
             buffer[i] = 0;
         }
@@ -51,18 +55,30 @@ public class LoadBuffer {
             // CC 1: Issuing
             // Starting Computing Address:
             // A = Imm
+<<<<<<< HEAD
             buffer[index] = (int) instr.getImm();
             System.out.println("Load Buffer: entry #" + index + ", Address: " + buffer[index]);
+=======
+            System.out.println("Expected : 1, Found: " + Main.CC);
+
+            buffer[index] = (int) instr.getImm();
+            System.out.println("CC: " + Main.CC + " Load Buffer: entry #" + index + ", Address: " + buffer[index]);
+>>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
 
             // CC 2: A = Imm + Regs[Rs2]
             nextCycle(Main.CC);
+            System.out.println("Expected : 2, Found: " + Main.CC);
             try {
                 buffer[index] += RegFile.read(instr.getRegB());
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new Exception("Cannot read from Register File");
             }
+<<<<<<< HEAD
             System.out.println("Load Buffer: entry #" + index + ", Address: " + buffer[index]);
+=======
+            System.out.println("CC: " + Main.CC + " Load Buffer: entry #" + index + ", Address: " + buffer[index]);
+>>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
 
             // CC 3: Writing
             nextCycle(Main.CC);
@@ -72,6 +88,7 @@ public class LoadBuffer {
                 load_size--;
                 // Load from Memory
                 int loadedValue = memInterface.loadFromMem(buffer[index]);
+                // TODO:: Change the -1 to be another error value
                 if(loadedValue == -1)
                     return false;
                 // Callback once done
@@ -105,8 +122,12 @@ public class LoadBuffer {
     }
 
     private void nextCycle(int cc) {
-        while(cc >= Main.CC) {
-            continue;
+        boolean flag= true;
+        while(flag) {
+            System.out.print("");
+            if (cc < Main.CC) {
+                flag = false;
+            }
         }
     }
 

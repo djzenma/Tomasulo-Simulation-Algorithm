@@ -5,10 +5,16 @@ import Instruction.InstructionQueue;
 import MemoryAndBuffer.LoadBuffer;
 import MemoryAndBuffer.Memory;
 
+<<<<<<< HEAD
 import MemoryAndBuffer.RegFile;
 
 import java.util.ArrayList;
 
+=======
+import java.util.ArrayList;
+import MemoryAndBuffer.RegFile;
+
+>>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
 public class Controller implements LoadBuffer.MemoryInterface{
     private ArrayList<Instruction> instrsList;
     private InstructionQueue instrQueue;
@@ -23,9 +29,15 @@ public class Controller implements LoadBuffer.MemoryInterface{
     }
 
     public void run() {
+<<<<<<< HEAD
         instrsList.forEach((i) -> {
             instrQueue.enqueue(i);
         });
+=======
+        for (Instruction i: instrsList) {
+            instrQueue.enqueue(i);
+        }
+>>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
 
         try {
             loadBuffer.insertInstr(instrQueue.dequeue());
