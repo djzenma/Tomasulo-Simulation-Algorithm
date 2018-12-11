@@ -1,35 +1,36 @@
 package Main;
 
 import Instruction.Instruction;
+import Instruction.InstructionQueue;
 import MemoryAndBuffer.LoadBuffer;
 import MemoryAndBuffer.Memory;
+import MemoryAndBuffer.RegFile;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class Controller implements LoadBuffer.MemoryInterface{
-    ArrayList<Instruction> instrsList;
-    Queue<Instruction> instrQueue;
-    LoadBuffer loadBuffer;
-    Memory memory;
+    private ArrayList<Instruction> instrsList;
+    private InstructionQueue instrQueue;
+    private LoadBuffer loadBuffer;
+    private Memory memory;
 
     public Controller(){
         instrsList = Utils.fillArray();
-        instrQueue = new LinkedList<Instruction>();
+        instrQueue = new InstructionQueue();
         loadBuffer = new LoadBuffer(this);
         memory = new Memory();
     }
 
     public void run() {
-        instrQueue.addAll(instrsList);
+        for (Instruction i: instrsList) {
+            instrQueue.enqueue(i);
+        }
 
         try {
-            int loadedData = loadBuffer.insertInstr(instrQueue.remove(), 0);
+            loadBuffer.insertInstr(instrQueue.dequeue());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Float.
 
         Utils.DeQueueAll(instrQueue, true);
     }
@@ -42,6 +43,22 @@ public class Controller implements LoadBuffer.MemoryInterface{
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    @Override
+    public boolean memoryLoadDone(int regDestination, int data) {
+        return RegFile.write(regDestination, data);
+    }
+
+    @Override
+    public boolean storeInMem(int address, int data) {
+        try {
+            memory.write(address, data);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

@@ -11,7 +11,8 @@ public class Instruction {
             FORMAT_CONDITIONAL_BRANCH = "CONDITIONAL BRANCH",
             FORMAT_JALR = "JALR",
             FORMAT_RET = "RET",
-            FORMAT_ARITHMETIC = "ARITHMETIC INSTRS";
+            FORMAT_ARITHMETIC = "ARITHMETIC INSTRS",
+            FORMAT_ARITHMETIC_IMM = "ARITHMETIC Imm INSTRS";
 
     // All Instructions
     public static final String
@@ -41,7 +42,7 @@ public class Instruction {
 
         if(format.equals(FORMAT_ARITHMETIC))
             this.regC = imm_regC;
-        else if(format.equals(FORMAT_LW_SW) || format.equals(FORMAT_CONDITIONAL_BRANCH))
+        else if(format.equals(FORMAT_LW_SW) || format.equals(FORMAT_CONDITIONAL_BRANCH) || format.equals(FORMAT_ARITHMETIC_IMM))
             this.imm = imm_regC;
         else
             throw new Exception("Exception: Please check your format");
