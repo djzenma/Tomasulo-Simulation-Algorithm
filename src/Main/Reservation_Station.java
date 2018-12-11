@@ -83,8 +83,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                         
                 System.out.println(inst.getName() + " failed to add ");
                 return false ;
-                    }
-             
+            }
         }
         
         case Instruction.SW :
@@ -592,7 +591,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
     public boolean remove (String type, ROB rob , int CC)
 {
  
-  int k = get_ready (type); //retrieves an inst with ready operands !! 
+  int k = get_ready(type); //retrieves an inst with ready operands !!
   if (k != -1)
   {
      switch (type)

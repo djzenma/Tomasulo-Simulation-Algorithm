@@ -4,19 +4,9 @@ import Instruction.Instruction;
 import Instruction.InstructionQueue;
 import MemoryAndBuffer.LoadBuffer;
 import MemoryAndBuffer.Memory;
-<<<<<<< HEAD
-import Main.Utils;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-=======
 import MemoryAndBuffer.RegFile;
-
-import java.util.ArrayList;
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
 
 public class Controller implements LoadBuffer.MemoryInterface{
     private ArrayList<Instruction> instrsList;
@@ -32,31 +22,15 @@ public class Controller implements LoadBuffer.MemoryInterface{
     }
 
     public void run() {
-<<<<<<< HEAD
-        instrQueue.addAll(instrsList);
-        
-        /*try {
-            Instruction lw = new Instruction(Instruction.LW, Instruction.FORMAT_LW_SW, 1, 2, 0);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }*/
-=======
         for (Instruction i: instrsList) {
             instrQueue.enqueue(i);
         }
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
 
         try {
             loadBuffer.insertInstr(instrQueue.dequeue());
         } catch (Exception e) {
             e.printStackTrace();
         }
-<<<<<<< HEAD
-     
-=======
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
-
-        Utils.DeQueueAll(instrQueue, true);
     }
 
 

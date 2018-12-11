@@ -6,11 +6,6 @@ import Main.Controller;
 
 
 public class LoadBuffer {
-<<<<<<< HEAD
-    private int size;
-    private final int MAX_CAPACITY = 4;
-    private String [] buffer;   // stores the addresses
-=======
 
     private int load_size;
     private int store_size;
@@ -19,13 +14,12 @@ public class LoadBuffer {
     private final int MAX_CAPACITY = LOAD_CAPACITY + STORE_CAPACITY;
 
     private int[] buffer;   // stores the addresses
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
     private MemoryInterface memInterface;
 
     public LoadBuffer(Controller controller) {
-        buffer = new String [MAX_CAPACITY];
+        buffer = new int[MAX_CAPACITY];
         for (int i = 0; i < MAX_CAPACITY; i++) {
-            buffer[i] = "0";
+            buffer[i] = 0;
         }
         load_size = 0;
         store_size = 0;
@@ -41,11 +35,6 @@ public class LoadBuffer {
             return false;
         }
         else {
-<<<<<<< HEAD
-            // CC 1: Issuing and A = Imm
-            buffer[size] = String.valueOf(loadInstr.getImm());
-            System.out.println("Load Buffer: entry #" + size + ", Address: " + buffer[size]);
-=======
             int index;
 
             if(instr.getName().equals(Instruction.LW)) {
@@ -62,26 +51,22 @@ public class LoadBuffer {
             // CC 1: Issuing
             // Starting Computing Address:
             // A = Imm
-            buffer[index] = instr.getImm();
-            System.out.println("Load Buffer: entry #" + index + ", Address: " + buffer[index]);
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
+            System.out.println("Expected : 1, Found: " + Main.CC);
+
+            buffer[index] = (int) instr.getImm();
+            System.out.println("CC: " + Main.CC + " Load Buffer: entry #" + index + ", Address: " + buffer[index]);
 
             // CC 2: A = Imm + Regs[Rs2]
             nextCycle(Main.CC);
+            System.out.println("Expected : 2, Found: " + Main.CC);
             try {
                 buffer[index] += RegFile.read(instr.getRegB());
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new Exception("Cannot read from Register File");
             }
-            System.out.println("Load Buffer: entry #" + index + ", Address: " + buffer[index]);
+            System.out.println("CC: " + Main.CC + " Load Buffer: entry #" + index + ", Address: " + buffer[index]);
 
-<<<<<<< HEAD
-            // Writing
-            int loadedValue = memInterface.loadFromMem(Integer.parseInt(buffer[size]));
-
-            return loadedValue;
-=======
             // CC 3: Writing
             nextCycle(Main.CC);
             // Case Load
@@ -90,6 +75,7 @@ public class LoadBuffer {
                 load_size--;
                 // Load from Memory
                 int loadedValue = memInterface.loadFromMem(buffer[index]);
+                // TODO:: Change the -1 to be another error value
                 if(loadedValue == -1)
                     return false;
                 // Callback once done
@@ -103,7 +89,6 @@ public class LoadBuffer {
                 // Store in Memory
                 return memInterface.storeInMem(buffer[index], instr.getRegA());
             }
->>>>>>> ca6bac890c2908c3ce20617f94d8070ee5613db8
         }
     }
 
@@ -124,8 +109,12 @@ public class LoadBuffer {
     }
 
     private void nextCycle(int cc) {
-        while(cc >= Main.CC) {
-            continue;
+        boolean flag= true;
+        while(flag) {
+            System.out.print("");
+            if (cc < Main.CC) {
+                flag = false;
+            }
         }
     }
 
