@@ -678,9 +678,10 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
         }
         case "ADD_SUB_ADDI" :
             {
-            float result = execute(ADD_SUB_ADDI[k] , CC) ;
-            rob.set_value(ADD_SUB_ADDI[k].rob_indx, result);
-            update (ADD_SUB_ADDI[k].rob_indx  ,  result);
+            //float result = execute(ADD_SUB_ADDI[k] , CC) ;
+            //rob.set_value(ADD_SUB_ADDI[k].rob_indx, result);
+            //update (ADD_SUB_ADDI[k].rob_indx  ,  result);
+                ADD_SUB_ADDI[k].execution_start_cycle = CC;
             System.out.println("an " + type + " is executing  ");
             
              try {
@@ -702,9 +703,10 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
        
         case "NAND" :  
         {
-            float result = execute(NAND[k] , CC) ;
-            rob.set_value(NAND[k].rob_indx, result);
-            update (NAND[k].rob_indx  ,  result);
+            //float result = execute(NAND[k] , CC) ;
+            //rob.set_value(NAND[k].rob_indx, result);
+            //update (NAND[k].rob_indx  ,  result);
+            NAND[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
             try {
             NAND[k].Qj =null;
@@ -724,9 +726,10 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
         }
         case "MUL" : 
         {
-            float result = execute(MUL[k], CC ) ;
-            rob.set_value(MUL[k].rob_indx, result);
-            update (MUL[k].rob_indx  ,  result);
+            //float result = execute(MUL[k], CC ) ;
+            //rob.set_value(MUL[k].rob_indx, result);
+            //update (MUL[k].rob_indx  ,  result);
+            MUL[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
             try {
             MUL[k].Qj =null;
@@ -770,14 +773,64 @@ for (int i=0 ;i< arr.length ; i++)
 
 return -1 ;
 }
+ 
+public void finish_execution (int CC , ROB rob)
+{
+    float result ;
+     for (int i =0; i<2 ; i++ )
+      if (CC - LW[i].execution_start_cycle >= 2 )
+      {
+      }
+          
+     
+      for (int i =0; i<2 ; i++ )
+      if (CC - SW[i].execution_start_cycle >= 2)
+      {
+          
+      }
+      
+      for (int i =0; i<3 ; i++ )
+      if (CC - JMP_JALR_RET[i].execution_start_cycle >= 1 )
+      {
+          
+      }
+      
+      for (int i =0; i<2 ; i++ )
+      if (CC - BEQ[i].execution_start_cycle >= 1 )  //CHANGE !!
+      {
+          result = execute(ADD_SUB_ADDI[i]) ;
+      }
+      
+      for (int i =0; i<3 ; i++ )
+      if (CC - ADD_SUB_ADDI[i].execution_start_cycle >= 2 )
+      {
+          result = execute(ADD_SUB_ADDI[i]) ;
+          rob.set_value(ADD_SUB_ADDI[i].rob_indx, result);
+          update (ADD_SUB_ADDI[i].rob_indx  ,  result);
+      }
+      
+      for (int i =0; i<1 ; i++ )
+      if (CC - NAND[i].execution_start_cycle >= 1)
+      {
+          result = execute(NAND[i]) ;
+          rob.set_value(NAND[i].rob_indx, result);
+          update (NAND[i].rob_indx  ,  result);
+      }
+      for (int i =0; i<2 ; i++ )
+      if (CC - MUL[i].execution_start_cycle >= 8)
+      {
+          result = execute(MUL[i]) ;
+          rob.set_value(MUL[i].rob_indx, result);
+          update (MUL[i].rob_indx  ,  result);
+      }
+          
+}
 
-
- private Float execute(Reservation_Station_Element rtrn  , int cycle)
+ private Float execute(Reservation_Station_Element rtrn )
          {
              Float result= null ;
              if (rtrn.operation == Instruction.ADD || rtrn.operation == Instruction.ADDI)
              {
-                 rtrn.execution_start_cycle = cycle;
                  result =  rtrn.Vj + rtrn.Vk;
              
              }
@@ -786,25 +839,21 @@ return -1 ;
              if (rtrn.operation == Instruction.SUB)
              {
              result =  rtrn.Vj + rtrn.Vk ;
-             rtrn.execution_start_cycle = cycle ;
              }
              else
              if (rtrn.operation == Instruction.MUL)
              {
              result = rtrn.Vj * rtrn.Vk ;
-             rtrn.execution_start_cycle = cycle ;
              }
              else
              if (rtrn.operation == Instruction.NAND)
              {
              result =  (float) ~(Float.floatToIntBits(rtrn.Vj) & Float.floatToIntBits(rtrn.Vk));
-             rtrn.execution_start_cycle = cycle ;
              }
              else 
              if (rtrn.operation == Instruction.BEQ)
              {
-             result =  rtrn.Vj + rtrn.Vk ;
-             rtrn.execution_start_cycle = cycle ;
+             result =  rtrn.Vj - rtrn.Vk ;
              }
              
              return result ;
