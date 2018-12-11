@@ -1,9 +1,9 @@
 package Main;
 
 import Instruction.Instruction;
+import Instruction.InstructionQueue;
 
 import java.util.ArrayList;
-import java.util.Queue;
 
 public class Utils {
     public static ArrayList<Instruction> fillArray() {
@@ -19,15 +19,15 @@ public class Utils {
         return instrsList;
     }
 
-    public static void DeQueueAll(Queue<Instruction> instrQueue, boolean consoleLog) {
+    public static void DeQueueAll(InstructionQueue instrQueue, boolean consoleLog) {
         if(consoleLog) {
-            while (!instrQueue.isEmpty()) {
-                System.out.println(instrQueue.remove());
+            for (int i = 0; i < instrQueue.getSize(); i++) {
+                System.out.println(instrQueue.dequeue());
             }
         }
         else {
-            while (!instrQueue.isEmpty()) {
-                instrQueue.remove();
+            for (int i = 0; i < instrQueue.getSize(); i++) {
+                instrQueue.dequeue();
             }
         }
     }
