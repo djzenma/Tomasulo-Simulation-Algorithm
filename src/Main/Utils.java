@@ -7,14 +7,17 @@ import java.util.ArrayList;
 
 public class Utils {
     public static ArrayList<Instruction> fillArray() {
-        Instruction lw = null;
+        Instruction add = null;
+        Instruction sub = null;
         try {
-            lw = new Instruction(Instruction.LW, Instruction.FORMAT_LW_SW, 2, 1, 0);
+            add = new Instruction(Instruction.ADD, Instruction.FORMAT_ARITHMETIC, 2, 1, 0);
+            sub = new Instruction(Instruction.SUB, Instruction.FORMAT_ARITHMETIC, 2, 2, 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
         ArrayList<Instruction> instrsList = new ArrayList<Instruction>(){};
-        instrsList.add(lw);
+        instrsList.add(add);
+        instrsList.add(sub);
 
         return instrsList;
     }

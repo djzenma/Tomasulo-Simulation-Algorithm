@@ -43,10 +43,7 @@ public class Instruction {
 
         if(format.equals(FORMAT_ARITHMETIC))
             this.regC = imm_regC;
-<<<<<<< HEAD
 
-=======
->>>>>>> d08eca792fa3344639d72a2f7ed096ccce9c43b7
         else if(format.equals(FORMAT_LW_SW) || format.equals(FORMAT_CONDITIONAL_BRANCH) || format.equals(FORMAT_ARITHMETIC_IMM))
             this.imm = imm_regC;
         else

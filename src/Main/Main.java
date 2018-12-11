@@ -6,10 +6,12 @@ import java.util.TimerTask;
 
 public class Main {
     public static int CC = 1;
-
+    private static ClkInterface clkInterface;
+    
     public static void main(String[] args){
-        updateCCEverySec();
         Controller controller = new Controller();
+        clkInterface = (ClkInterface) controller;
+        updateCCEverySec();
         controller.run();
         System.exit(0);
     }
@@ -21,7 +23,12 @@ public class Main {
             @Override
             public void run() {
                 CC++;
+                clkInterface.didUpdate();
             }
         }, 1000, 1000);
+    }
+    
+    interface ClkInterface {
+        void didUpdate();
     }
 }

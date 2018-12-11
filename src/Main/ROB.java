@@ -6,6 +6,7 @@
 package Main;
 
 import Instruction.Instruction;
+import MemoryAndBuffer.RegFile;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -44,6 +45,13 @@ public  class ROB implements Iterable {
      */
     public  int size() {
         return n;
+    }
+    
+     public  boolean check() {
+         if (n<6)
+        return true;
+         else 
+        return false ;
     }
 
     /**
@@ -172,6 +180,15 @@ public  class ROB implements Iterable {
         }
         
         return s.toString();
+    }
+    public void commit ()
+    {
+        if (first.ready == true)
+        {
+            RegFile.write(first.dest, first.value);
+        }
+        first= first.next ;
+        n-- ;
     }
     
  public  Iterator iterator()  {

@@ -25,6 +25,8 @@ int NAND_counter =0 ;
 Reservation_Station_Element [] MUL ;
 int MUL_counter =0 ;
 
+public static String[] formats= {"LW", "SW", "JMP_JALR_RET", "BEQ", "ADD_SUB_ADDI", "NAND","MUL"};
+
 public Reservation_Station ()
 {
       LW = new Reservation_Station_Element [2]; 
@@ -384,7 +386,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                 {
                     ADD_SUB_ADDI[y].operation =  inst.getName() ;
                     ADD_SUB_ADDI[y].busy =  true;
-                     ADD_SUB_ADDI[y].rob_indx = rob_ind ;
+                    ADD_SUB_ADDI[y].rob_indx = rob_ind ;
                     
                      int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
@@ -452,7 +454,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                 {
                     NAND[y].operation =  inst.getName() ;
                     NAND[y].busy =  true;
-                     NAND[y].rob_indx = rob_ind ;
+                    NAND[y].rob_indx = rob_ind ;
                     
                      int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
@@ -588,7 +590,8 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
 
         }   
 }
-    public boolean remove (String type, ROB rob , int CC)
+
+ public void remove (String type, ROB rob , int CC)
 {
  
   int k = get_ready(type); //retrieves an inst with ready operands !!
@@ -600,7 +603,8 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
            
             
             System.out.println("an " + type + " is executing  ");
-            try {
+            LW[k].execution_start_cycle = CC;
+            /*try {
             LW[k].Qj =null;
             LW[k].Qk = null ;
             LW[k].Vj = null ;
@@ -615,13 +619,13 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                 System.out.println("Out Of Bounds !!");
                 return false ;
             }
-           
+           */
         } 
         case "SW" : 
         {
             System.out.println("an " + type + " is executing  ");
-        
-            try {
+            SW[k].execution_start_cycle = CC;
+            /*try {
             SW[k].Qj =null;
             SW[k].Qk = null ;
             SW[k].Vj = null ;
@@ -635,13 +639,14 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
         case "JMP_JALR_RET" :
             {
             
             System.out.println("an " + type + " is executing  ");
-             try {
+            JMP_JALR_RET[k].execution_start_cycle = CC;
+             /*try {
             JMP_JALR_RET[k].Qj =null;
             JMP_JALR_RET[k].Qk = null ;
             JMP_JALR_RET[k].Vj = null ;
@@ -653,13 +658,14 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
        
         case "BEQ" :  
         {
             System.out.println("an " + type + " is executing  ");
-            try {
+            BEQ[k].execution_start_cycle = CC;
+            /*try {
             BEQ[k].Qj =null;
             BEQ[k].Qk = null ;
             BEQ[k].Vj = null ;
@@ -673,17 +679,17 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
         case "ADD_SUB_ADDI" :
             {
             //float result = execute(ADD_SUB_ADDI[k] , CC) ;
             //rob.set_value(ADD_SUB_ADDI[k].rob_indx, result);
             //update (ADD_SUB_ADDI[k].rob_indx  ,  result);
-                ADD_SUB_ADDI[k].execution_start_cycle = CC;
+            ADD_SUB_ADDI[k].execution_start_cycle = CC;
             System.out.println("an " + type + " is executing  ");
             
-             try {
+             /*try {
             ADD_SUB_ADDI[k].Qj =null;
             ADD_SUB_ADDI[k].Qk = null ;
             ADD_SUB_ADDI[k].Vj = null ;
@@ -697,7 +703,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
        
         case "NAND" :  
@@ -707,7 +713,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             //update (NAND[k].rob_indx  ,  result);
             NAND[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
-            try {
+           /* try {
             NAND[k].Qj =null;
             NAND[k].Qk = null ;
             NAND[k].Vj = null ;
@@ -721,7 +727,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
         case "MUL" : 
         {
@@ -730,7 +736,7 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             //update (MUL[k].rob_indx  ,  result);
             MUL[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
-            try {
+           /* try {
             MUL[k].Qj =null;
             MUL[k].Qk = null ;
             MUL[k].Vj = null ;
@@ -743,19 +749,15 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
             {
                 System.out.println("Out Of Bounds !!");
                 return false ;
-            }
+            }*/
         }
-        default :
-        return false ;
-
-         
+        
      }   
                 
   }
   else
   {
       System.out.println ("No Ready Instructions !!");
-      return false ;
   }
           
 }
@@ -773,24 +775,137 @@ for (int i=0 ;i< arr.length ; i++)
 return -1 ;
 }
  
+public boolean check (Instruction instr)
+{
+    int y ; 
+    switch (instr.getName())
+    {
+        case Instruction.ADD  :
+        { y = empty_index (ADD_SUB_ADDI);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        case Instruction.SUB :
+        { y = empty_index (ADD_SUB_ADDI);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        
+        case Instruction.ADDI :
+        { y = empty_index (ADD_SUB_ADDI);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+         case Instruction.BEQ :
+        { y = empty_index (BEQ);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+         case Instruction.NAND :
+        { y = empty_index (NAND);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+         case Instruction.MUL :
+        { y = empty_index (MUL);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+         case Instruction.JMP :
+        { y = empty_index (JMP_JALR_RET);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        
+        case Instruction.JALR :
+        { y = empty_index (JMP_JALR_RET);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        
+        case Instruction.RET :
+        { y = empty_index (JMP_JALR_RET);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        
+        case Instruction.LW :
+        { y = empty_index (LW);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        
+        case Instruction.SW :
+        { y = empty_index (SW);
+          if (y == -1)
+              return false ;
+          else
+              return true;
+        }
+        default :
+        return false ;
+    }
+    
+}
+
 public void finish_execution (int CC , ROB rob)
 {
     float result ;
      for (int i =0; i<2 ; i++ )
       if (CC - LW[i].execution_start_cycle >= 2 )
       {
+            LW[i].Qj =null;
+            LW[i].Qk = null ;
+            LW[i].Vj = null ;
+            LW[i].Vk = null ;
+            LW[i].busy = false  ;
+            LW[i].operation = null ;
+            LW[i].rob_indx = null ;
       }
           
      
       for (int i =0; i<2 ; i++ )
       if (CC - SW[i].execution_start_cycle >= 2)
       {
+           SW[i].Qj =null;
+            SW[i].Qk = null ;
+            SW[i].Vj = null ;
+            SW[i].Vk = null ;
+            SW[i].busy = false  ;
+            SW[i].operation = null ;
+            SW[i].rob_indx = null ;
           
       }
       
       for (int i =0; i<3 ; i++ )
       if (CC - JMP_JALR_RET[i].execution_start_cycle >= 1 )
       {
+          JMP_JALR_RET[i].Qj =null;
+            JMP_JALR_RET[i].Qk = null ;
+            JMP_JALR_RET[i].Vj = null ;
+            JMP_JALR_RET[i].Vk = null ;
+            JMP_JALR_RET[i].busy = false  ;
+            JMP_JALR_RET[i].operation = null ;
           
       }
       
@@ -798,6 +913,13 @@ public void finish_execution (int CC , ROB rob)
       if (CC - BEQ[i].execution_start_cycle >= 1 )  //CHANGE !!
       {
           result = execute(ADD_SUB_ADDI[i]) ;
+          BEQ[i].Qj =null;
+            BEQ[i].Qk = null ;
+            BEQ[i].Vj = null ;
+            BEQ[i].Vk = null ;
+            BEQ[i].busy = false  ;
+            BEQ[i].operation = null ;
+            BEQ[i].rob_indx = null ;
       }
       
       for (int i =0; i<3 ; i++ )
@@ -806,6 +928,14 @@ public void finish_execution (int CC , ROB rob)
           result = execute(ADD_SUB_ADDI[i]) ;
           rob.set_value(ADD_SUB_ADDI[i].rob_indx, result);
           update (ADD_SUB_ADDI[i].rob_indx  ,  result);
+          ADD_SUB_ADDI[i].Qj =null;
+          ADD_SUB_ADDI[i].Qk = null ;
+          ADD_SUB_ADDI[i].Vj = null ;
+          ADD_SUB_ADDI[i].Vk = null ;
+          ADD_SUB_ADDI[i].busy = false  ;
+          ADD_SUB_ADDI[i].operation = null ;
+          ADD_SUB_ADDI[i].rob_indx = null ;
+             
       }
       
       for (int i =0; i<1 ; i++ )
@@ -814,6 +944,13 @@ public void finish_execution (int CC , ROB rob)
           result = execute(NAND[i]) ;
           rob.set_value(NAND[i].rob_indx, result);
           update (NAND[i].rob_indx  ,  result);
+            NAND[i].Qj =null;
+            NAND[i].Qk = null ;
+            NAND[i].Vj = null ;
+            NAND[i].Vk = null ;
+            NAND[i].busy = false  ;
+            NAND[i].operation = null ;
+            NAND[i].rob_indx = null ;
       }
       for (int i =0; i<2 ; i++ )
       if (CC - MUL[i].execution_start_cycle >= 8)
@@ -821,6 +958,13 @@ public void finish_execution (int CC , ROB rob)
           result = execute(MUL[i]) ;
           rob.set_value(MUL[i].rob_indx, result);
           update (MUL[i].rob_indx  ,  result);
+            MUL[i].Qj =null;
+            MUL[i].Qk = null ;
+            MUL[i].Vj = null ;
+            MUL[i].Vk = null ;
+            MUL[i].busy = false  ;
+            MUL[i].operation = null ;
+            MUL[i].rob_indx = null ;
       }
           
 }
@@ -831,7 +975,7 @@ public void finish_execution (int CC , ROB rob)
              if (rtrn.operation == Instruction.ADD || rtrn.operation == Instruction.ADDI)
              {
                  result =  rtrn.Vj + rtrn.Vk;
-             
+                 
              }
                 
              else
@@ -972,7 +1116,7 @@ void update (Integer rob_indx  , float result)
             }
         
 }
-    @ Override
+    @Override
     public Iterator iterator( ) {
         Iterator<Reservation_Station_Element> it ;
         Scanner reader = new Scanner(System.in);  // Reading from System.in

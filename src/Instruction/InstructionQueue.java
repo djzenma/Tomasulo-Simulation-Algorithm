@@ -31,4 +31,8 @@ public class InstructionQueue {
     public int getSize() {
         return size;
     }
+    
+    public Instruction peek() {
+        return instrQueue.peek();
+    }
 }
