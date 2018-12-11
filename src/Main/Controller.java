@@ -3,10 +3,13 @@ package Main;
 import Instruction.Instruction;
 import MemoryAndBuffer.LoadBuffer;
 import MemoryAndBuffer.Memory;
+import Main.Utils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Controller implements LoadBuffer.MemoryInterface{
     ArrayList<Instruction> instrsList;
@@ -23,13 +26,19 @@ public class Controller implements LoadBuffer.MemoryInterface{
 
     public void run() {
         instrQueue.addAll(instrsList);
+        
+        /*try {
+            Instruction lw = new Instruction(Instruction.LW, Instruction.FORMAT_LW_SW, 1, 2, 0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }*/
 
         try {
             int loadedData = loadBuffer.insertInstr(instrQueue.remove(), 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Float.
+     
 
         Utils.DeQueueAll(instrQueue, true);
     }

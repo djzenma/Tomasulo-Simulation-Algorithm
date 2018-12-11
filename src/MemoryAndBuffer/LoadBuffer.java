@@ -9,13 +9,13 @@ import Main.Controller;
 public class LoadBuffer {
     private int size;
     private final int MAX_CAPACITY = 4;
-    private int[] buffer;   // stores the addresses
+    private String [] buffer;   // stores the addresses
     private MemoryInterface memInterface;
 
     public LoadBuffer(Controller controller) {
-        buffer = new int[MAX_CAPACITY];
+        buffer = new String [MAX_CAPACITY];
         for (int i = 0; i < MAX_CAPACITY; i++) {
-            buffer[i] = 0;
+            buffer[i] = "0";
         }
         size = 0;
         memInterface = controller;
@@ -32,7 +32,7 @@ public class LoadBuffer {
         }
         else {
             // CC 1: Issuing and A = Imm
-            buffer[size] = loadInstr.getImm();
+            buffer[size] = String.valueOf(loadInstr.getImm());
             System.out.println("Load Buffer: entry #" + size + ", Address: " + buffer[size]);
 
             // CC 2: A = Imm + Regs[Rs2]
@@ -46,7 +46,7 @@ public class LoadBuffer {
             System.out.println("Load Buffer: entry #" + size + ", Address: " + buffer[size]);
 
             // Writing
-            int loadedValue = memInterface.loadFromMem(buffer[size]);
+            int loadedValue = memInterface.loadFromMem(Integer.parseInt(buffer[size]));
 
             return loadedValue;
         }

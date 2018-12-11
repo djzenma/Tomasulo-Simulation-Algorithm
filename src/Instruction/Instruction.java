@@ -2,7 +2,8 @@ package Instruction;
 
 public class Instruction {
     private String name, format;
-    private int regA, regB, regC, imm;
+    private int regA, regB, regC;
+    private float imm;
 
     // All Formats
     public static final String
@@ -41,7 +42,7 @@ public class Instruction {
 
         if(format.equals(FORMAT_ARITHMETIC))
             this.regC = imm_regC;
-        else if(format.equals(FORMAT_LW_SW) || format.equals(FORMAT_CONDITIONAL_BRANCH))
+        else if(format.equals(FORMAT_LW_SW) || format.equals(FORMAT_CONDITIONAL_BRANCH) ||format.equals("ADDI"))
             this.imm = imm_regC;
         else
             throw new Exception("Exception: Please check your format");
@@ -84,7 +85,7 @@ public class Instruction {
         return format;
     }
 
-    public int getRegA() {
+    public int  getRegA() {
         return regA;
     }
 
@@ -96,7 +97,7 @@ public class Instruction {
         return regC;
     }
 
-    public int getImm() {
+    public float getImm() {
         return imm;
     }
 
