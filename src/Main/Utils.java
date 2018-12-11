@@ -1,6 +1,7 @@
 package Main;
 
 import Instruction.Instruction;
+import Instruction.InstructionQueue;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class Utils {
         return instrsList;
     }
 
-    public static void DeQueueAll(Instruction.InstructionQueue instrQueue, boolean consoleLog) {
+    public static void DeQueueAll(InstructionQueue instrQueue, boolean consoleLog) {
         if(consoleLog) {
             for (int i = 0; i < instrQueue.getSize(); i++) {
                 System.out.println(instrQueue.dequeue());
