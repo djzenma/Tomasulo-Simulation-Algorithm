@@ -8,8 +8,8 @@ import MemoryAndBuffer.Memory;
 
 import java.util.ArrayList;
 import MemoryAndBuffer.RegFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
 
 public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface{
     private ArrayList<Instruction> instrsList;
@@ -20,24 +20,14 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     private Reservation_Station rs;
 
     public Controller(){
-        instrsList = Utils.fillArray();
-        instrQueue = new InstructionQueue();
         loadBuffer = new LoadBuffer(this);
         memory = new Memory();
         rob = new ROB();
         rs = new Reservation_Station();
-    }
 
-    public void run() {
-        instrsList.forEach((i) -> {
-            instrQueue.enqueue(i);
-        });
-        
-        try {
-            loadBuffer.insertInstr(instrQueue.dequeue());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        instrsList = Utils.fillArray();
+        instrQueue = new InstructionQueue();
+        instrsList.forEach((i) -> instrQueue.enqueue(i));
     }
 
 
@@ -67,22 +57,25 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         }
     }
 
+    // always @ posedge clk
     @Override
     public void didUpdate() {
-        // always @ posedge clk
         /*
         *   Issue
         */
         Instruction instr = instrQueue.peek();
         if(rob.check() && rs.check(instr)) {
             if(instr.getName().equals(Instruction.LW) || instr.getName().equals(Instruction.SW)) {
-                Instruction deqIns = instrQueue.dequeue();
-                fetch(deqIns);
-                try {
-                    loadBuffer.insertInstr(deqIns);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                if(instr.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
+                    loadBufferLogic();
                 }
+                else if(instr.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
+                    loadBufferLogic();
+                }
+                else {
+                    // TODO::wait
+                }
+
             }
             else {
                 Instruction deqIns = instrQueue.dequeue();
@@ -95,6 +88,8 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             rob.commit();
         }
     }
+
+
     
     private void fetch(Instruction deqIns) {
         rs.add(deqIns, rob, rob.enqueue(deqIns));
@@ -104,6 +99,20 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         for(String format: Reservation_Station.formats) {
             rs.remove(format, rob, Main.CC);
         }
+    }
+
+    private void loadBufferLogic() {
+        Instruction deqIns = instrQueue.dequeue();
+        fetch(deqIns);
+        try {
+            loadBuffer.insertInstr(deqIns);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public int getNumInstrs() {
+        return instrsList.size();
     }
     
 }

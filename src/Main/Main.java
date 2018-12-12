@@ -7,13 +7,12 @@ import java.util.TimerTask;
 public class Main {
     public static int CC = 1;
     private static ClkInterface clkInterface;
-    
+    private static Controller controller;
+
     public static void main(String[] args){
-        Controller controller = new Controller();
+        controller = new Controller();
         clkInterface = (ClkInterface) controller;
         updateCCEverySec();
-        controller.run();
-        System.exit(0);
     }
 
 
@@ -22,10 +21,11 @@ public class Main {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                CC++;
-                clkInterface.didUpdate();
+                    CC++;
+                    clkInterface.didUpdate();
+                }
             }
-        }, 1000, 1000);
+        , 1000, 1000);
     }
     
     interface ClkInterface {

@@ -68,7 +68,7 @@ public  class ROB implements Iterable {
     /**
      * Adds the item to this queue.
      *
-     * @param  item the item to add
+     *
      */
     public  int enqueue(Instruction inst) {
         if (n <6)
@@ -183,7 +183,7 @@ public  class ROB implements Iterable {
     }
     public void commit ()
     {
-        if (first.ready == true)
+        if (first.ready)
         {
             RegFile.write(first.dest, first.value);
         }

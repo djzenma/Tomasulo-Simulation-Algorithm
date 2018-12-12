@@ -112,6 +112,14 @@ public class LoadBuffer {
             return true;
     }
 
+    public boolean loadIsFree() {
+        return load_size < LOAD_CAPACITY;
+    }
+
+    public boolean storeIsFree() {
+        return load_size < LOAD_CAPACITY;
+    }
+
     private void nextCycle(int cc) {
         boolean flag= true;
         while(flag) {
