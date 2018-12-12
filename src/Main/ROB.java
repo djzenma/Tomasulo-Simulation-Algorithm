@@ -171,7 +171,7 @@ public  class ROB implements Iterable {
             
         }
         
-        public Float get_value (int indx )
+        public Integer get_value (int indx )
         {
             ROB_NODE current = first  ;
             while (current != null)
@@ -184,7 +184,7 @@ public  class ROB implements Iterable {
             return null ;
         }
         
-        public boolean set_value (int indx , Float value , Float jalrvalue )
+        public boolean set_value (int indx , Integer value , Integer jalrvalue )
         {
             
             ROB_NODE current = first  ;

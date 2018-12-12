@@ -3,7 +3,8 @@ package Instruction;
 public class Instruction {
     private String name, format;
     private int regA, regB, regC;
-    private float imm;
+    private int imm;
+    private int pc;
 
     // All Formats
     public static final String
@@ -99,9 +100,16 @@ public class Instruction {
         return regC;
     }
 
-    public float getImm() {
+    public int getImm() {
         return imm;
     }
 
 
+    public int getPc() {
+        return pc;
+    }
+
+    public void setPc(int pc) {
+        this.pc = pc;
+    }
 }

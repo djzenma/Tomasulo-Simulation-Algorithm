@@ -1,6 +1,8 @@
 package Main;
 
 
+import MemoryAndBuffer.RegFile;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,8 +23,9 @@ public class Main {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                    CC++;
                     clkInterface.didUpdate();
+                    CC++;
+                    RegFile.print();
                 }
             }
         , 1000, 1000);

@@ -8,8 +8,8 @@ public class ROB_NODE {
     String type ; 
     Integer dest ;
     boolean ready ;
-    Float value ;
-    Float jalr_value2 ;
+    Integer value ;
+    Integer jalr_value2 ;
     ROB_NODE next;
     ROB_NODE previous;
     

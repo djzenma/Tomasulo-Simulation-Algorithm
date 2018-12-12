@@ -348,7 +348,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                 
                 
-                    ADD_SUB_ADDI[y].Vk= (float)inst.getRegC();
+                    ADD_SUB_ADDI[y].Vk= inst.getRegC();
                 
                 
                     ADD_SUB_ADDI_counter++ ;
@@ -719,7 +719,7 @@ public boolean check (Instruction instr)
 
 public void finish_execution (int CC , ROB rob)
 {
-     Float result ;
+     Integer result ;
      for (int i =0; i<2 ; i++ )
          if (LW[i].execution_start_cycle != null)
      {
@@ -769,7 +769,7 @@ public void finish_execution (int CC , ROB rob)
           else
           if (JMP_JALR_RET[i].operation == Instruction.JALR)
           {
-              result = (float)JMP_JALR_RET[i].PC + 1 ;
+              result = JMP_JALR_RET[i].PC + 1 ;
               rob.set_value(JMP_JALR_RET[i].rob_indx, result , JMP_JALR_RET[i].Vj); //write pc+imm to rob with dest pc 
               update (NAND[i].rob_indx  ,  result);
           } 
@@ -800,7 +800,7 @@ public void finish_execution (int CC , ROB rob)
           result = execute(ADD_SUB_ADDI[i]) ;
           if (result == 0) //Taken
           {
-               result = (float)JMP_JALR_RET[i].PC  ;
+               result = JMP_JALR_RET[i].PC  ;
                rob.set_value(JMP_JALR_RET[i].rob_indx, result , null);
           }
           else
@@ -882,9 +882,9 @@ public void finish_execution (int CC , ROB rob)
      }
 }
 
- private Float execute(Reservation_Station_Element rtrn )
+ private Integer execute(Reservation_Station_Element rtrn )
          {
-             Float result= null ;
+             Integer result= null ;
              if (rtrn.operation == Instruction.ADD || rtrn.operation == Instruction.ADDI)
              {
                  result =  rtrn.Vj + rtrn.Vk;
@@ -904,7 +904,7 @@ public void finish_execution (int CC , ROB rob)
              else
              if (rtrn.operation == Instruction.NAND)
              {
-             result =  (float) ~(Float.floatToIntBits(rtrn.Vj) & Float.floatToIntBits(rtrn.Vk));
+             result =  ~(rtrn.Vj & rtrn.Vk);
              }
              else 
              if (rtrn.operation == Instruction.BEQ)
@@ -976,7 +976,7 @@ private int get_ready (String type)
 }
 }
 
-void update (Integer rob_indx  , float result )
+void update (Integer rob_indx  , int result )
 {
     
         

@@ -13,10 +13,11 @@ public class InstructionQueue {
         instrQueue = new LinkedList<Instruction>();
     }
 
-    public boolean enqueue(Instruction instr) {
+    public boolean enqueue(Instruction instr, int pc) {
         if(size > MAX_CAPACITY)
             return false;
         else {
+            instr.setPc(pc);
             instrQueue.add(instr);
             size++;
             return true;

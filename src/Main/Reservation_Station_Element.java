@@ -5,8 +5,8 @@ package Main;
 public class Reservation_Station_Element {
     String operation ;
     boolean busy ; 
-    Float Vk ;
-    Float Vj ;
+    Integer Vk ;
+    Integer Vj ;
     Integer Qk ; 
     Integer PC ;
     Integer Qj ;
