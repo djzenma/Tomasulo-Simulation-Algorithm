@@ -54,164 +54,161 @@ public Reservation_Station ()
       
 }
 
-public boolean add (Instruction inst , ROB rob , int rob_ind)
+public void add (Instruction inst , ROB rob , int rob_ind , int PC)
 {
-    int y ; 
+ int y ; 
  switch (inst.getName())
         {
         case Instruction.LW : 
         {
             
-            y = empty_index (LW);
-            
-            if (y != -1)
-            {
+                y = empty_index (LW);
                 LW[y].operation =  inst.getName() ;
                 LW[y].busy =  true ;
-                
-                
                 LW[y].Qj= null ;
                 LW[y].Vj= null ;
                 LW[y].Qk= null;
+                LW[y].PC = PC ;
                 LW[y].Vk= null;
                 LW[y].rob_indx = rob_ind ;
-                
                 LW_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
-                return true ;
-            }
-            else 
-             {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-            }
+           
         }
         
         case Instruction.SW :
         {
             y =empty_index (SW);
            
-            if (y != -1)
-            {
+            
                 SW[y].operation =  inst.getName() ;
                 SW[y].busy = true ;
-               
                 SW[y].Vj= null;
                 SW[y].Qj= null ;
                 SW[y].Vk= null;
                 SW[y].Qk= null;
+                SW[y].PC = PC ;
                 SW[y].rob_indx = rob_ind ;
                 SW_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
-                return true ;
-            }
-            else 
-             {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+           
         }
         case Instruction.JMP:
         {
             y =empty_index (JMP_JALR_RET);
             
-                if (y != -1)
-                {
+               
                     JMP_JALR_RET[y].operation =  inst.getName() ;
                     JMP_JALR_RET[y].busy =  true ;
                     JMP_JALR_RET_counter ++ ;
                     JMP_JALR_RET[y].Qj = null ;
                     JMP_JALR_RET[y].Qk= null ;
-                    JMP_JALR_RET[y].Vj= null ;
+                    JMP_JALR_RET[y].PC = PC ;
+                    JMP_JALR_RET[y].Vj= inst.getImm() ;
                     JMP_JALR_RET[y].Vk= null ;
                     JMP_JALR_RET[y].rob_indx = rob_ind ;
                      System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                
                  
         }
         case Instruction.JALR:
         {
             y =empty_index (JMP_JALR_RET);
             
-                if (y != -1)
-                {
+                
                     JMP_JALR_RET[y].operation =  inst.getName() ;
                     JMP_JALR_RET[y].busy =  true ;
-                    
-                    
-                    JMP_JALR_RET[y].Qj= null ;
-                    JMP_JALR_RET[y].Vj= null ;
+                    JMP_JALR_RET[y].Vk= null ;
                     JMP_JALR_RET[y].Qk= null ;
-                    JMP_JALR_RET[y].Vk=  null ;
+                    JMP_JALR_RET[y].PC = PC ;
+                    
+                    int rob_indx;
+                    rob_indx = rob.find_dest(inst.getRegB());
+                    if (rob_indx == -1 ) //not found in ROB
+                    {
+                        
+                        JMP_JALR_RET[y].Vj= RegFile.read(inst.getRegB());
+                        JMP_JALR_RET[y].Qj= null ;
+                    }
+                    else //in ROB 
+                    {
+                        if( rob.is_ready(rob_indx)) // if rob entry is available not in queue
+                        {
+                            JMP_JALR_RET[y].Vj= rob.get_value(rob_indx);
+                            JMP_JALR_RET[y].Qj= null ;
+                        }
+                        else 
+                        {
+                             JMP_JALR_RET[y].Qj = rob_indx ;
+                             JMP_JALR_RET[y].Vj= null ;
+                        }
+                            
+                    }
                     JMP_JALR_RET[y].rob_indx = rob_ind ;
-                
-                
                     JMP_JALR_RET_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                    
         }
         
          case Instruction.RET : 
          {
              y =empty_index (JMP_JALR_RET);
              
-                if (y != -1)
-                {
+               
                     JMP_JALR_RET[y].operation =  inst.getName() ;
                     JMP_JALR_RET[y].busy =  true ;
+                    JMP_JALR_RET[y].PC = PC ;
                     
-                    JMP_JALR_RET[y].Qj= null ;
-                    JMP_JALR_RET[y].Vj= null ;
+                    int rob_indx;
+                    rob_indx = rob.find_dest(inst.getRegA());
+                    if (rob_indx == -1 ) //not found in ROB
+                    {
+                        
+                        JMP_JALR_RET[y].Vj= RegFile.read(inst.getRegA());
+                        JMP_JALR_RET[y].Qj= null ;
+                    }
+                    else //in ROB 
+                    {
+                        if( rob.is_ready(rob_indx)) // if rob entry is available not in queue
+                        {
+                            JMP_JALR_RET[y].Vj= rob.get_value(rob_indx);
+                            JMP_JALR_RET[y].Qj= null ;
+                        }
+                        else 
+                        {
+                             JMP_JALR_RET[y].Qj = rob_indx ;
+                             JMP_JALR_RET[y].Vj= null ;
+                        }
+                            
+                    }
+                    
                     JMP_JALR_RET[y].Qk= null ;
                     JMP_JALR_RET[y].Vk=  null ;
                     JMP_JALR_RET[y].rob_indx = rob_ind ;
-                
                     JMP_JALR_RET_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                    {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                   
+                
          }
         case Instruction.BEQ : 
         {
             y =empty_index (BEQ);
             
-            if (y != -1)
-            {
+            
                 BEQ[y].operation =  inst.getName() ;
                 BEQ[y].busy =  true ;
+                BEQ[y].PC = PC + (int)inst.getImm();
                 BEQ[y].rob_indx = rob_ind ;
                  
                 int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegA());
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
-                        BEQ[y].Vj= RegFile.read(inst.getRegB());
+                        BEQ[y].Vj= RegFile.read(inst.getRegA());
                         BEQ[y].Qj= null ;
                     }
                     else //in ROB 
@@ -230,11 +227,11 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegC());
+                    rob_indx = rob.find_dest(inst.getRegB());
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
-                        BEQ[y].Vk= RegFile.read(inst.getRegC());
+                        BEQ[y].Vk= RegFile.read(inst.getRegB());
                         BEQ[y].Qk= null ;
                     }
                     else //in ROB 
@@ -253,24 +250,18 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     }
                 BEQ_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
-                return true ;
-            }
-            else 
-             {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-             }
+            
+            
         }
         case Instruction.ADD:
         {
             y = empty_index (ADD_SUB_ADDI);
             
-                if (y != -1)
-                {
+               
                     ADD_SUB_ADDI[y].operation =  inst.getName() ;
                     ADD_SUB_ADDI[y].busy =  true;
                     ADD_SUB_ADDI[y].rob_indx = rob_ind ;
+                    ADD_SUB_ADDI[y].PC = PC ;
                     
                     int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
@@ -321,26 +312,19 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                
         }
          case Instruction.ADDI:
         {
             y = empty_index (ADD_SUB_ADDI);
             
-                if (y != -1)
-                {
+                
                     ADD_SUB_ADDI[y].operation =  inst.getName() ;
                     ADD_SUB_ADDI[y].busy =  true;
-                     ADD_SUB_ADDI[y].rob_indx = rob_ind ;
+                    ADD_SUB_ADDI[y].rob_indx = rob_ind ;
+                    ADD_SUB_ADDI[y].PC = PC ;
                     
-                int rob_indx;
+                    int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
                     if (rob_indx == -1 ) //not found in ROB
                     {
@@ -369,24 +353,18 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                 
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                
+                
         }
         case Instruction.SUB :
         {
             y = empty_index (ADD_SUB_ADDI);
             
-                if (y != -1)
-                {
+               
                     ADD_SUB_ADDI[y].operation =  inst.getName() ;
                     ADD_SUB_ADDI[y].busy =  true;
                     ADD_SUB_ADDI[y].rob_indx = rob_ind ;
+                    ADD_SUB_ADDI[y].PC = PC ;
                     
                      int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
@@ -437,24 +415,17 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                   
         }
         case Instruction.NAND : 
         {
             y = empty_index (NAND);
             
-                if (y != -1)
-                {
+                
                     NAND[y].operation =  inst.getName() ;
                     NAND[y].busy =  true;
                     NAND[y].rob_indx = rob_ind ;
+                    NAND[y].PC = PC ;
                     
                      int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
@@ -505,24 +476,17 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     NAND_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                   
         }
         case Instruction.MUL : 
           {
             y = empty_index (MUL);
             
-                if (y != -1)
-                {
+                
                     MUL[y].operation =  inst.getName() ;
                     MUL[y].busy =  true;
                     MUL[y].rob_indx = rob_ind ;
+                    MUL[y].PC = PC ;
                      int rob_indx;
                     rob_indx = rob.find_dest(inst.getRegB());
                     if (rob_indx == -1 ) //not found in ROB
@@ -572,20 +536,11 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
                     MUL_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    return true ;
-                }
-                else 
-                 {
-                        
-                System.out.println(inst.getName() + " failed to add ");
-                return false ;
-                    }
+                    
         }
         default :
-             {
-                        
+              {        
                 System.out.println(inst.getName() + " failed to add ");
-                return false ;
               }
 
         }   
@@ -600,156 +555,50 @@ public boolean add (Instruction inst , ROB rob , int rob_ind)
      switch (type)
         {
         case "LW" : {
-           
-            
             System.out.println("an " + type + " is executing  ");
             LW[k].execution_start_cycle = CC;
-            /*try {
-            LW[k].Qj =null;
-            LW[k].Qk = null ;
-            LW[k].Vj = null ;
-            LW[k].Vk = null ;
-            LW[k].busy = false  ;
-            LW[k].operation = null ;
-            LW[k].rob_indx = null ;
-            return true ;
-            }
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }
-           */
+            
         } 
         case "SW" : 
         {
             System.out.println("an " + type + " is executing  ");
-            SW[k].execution_start_cycle = CC;
-            /*try {
-            SW[k].Qj =null;
-            SW[k].Qk = null ;
-            SW[k].Vj = null ;
-            SW[k].Vk = null ;
-            SW[k].busy = false  ;
-            SW[k].operation = null ;
-            SW[k].rob_indx = null ;
-
-            return true ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
+            SW[k].execution_start_cycle = CC; //stores the cycle it started execution in
         }
         case "JMP_JALR_RET" :
             {
             
             System.out.println("an " + type + " is executing  ");
             JMP_JALR_RET[k].execution_start_cycle = CC;
-             /*try {
-            JMP_JALR_RET[k].Qj =null;
-            JMP_JALR_RET[k].Qk = null ;
-            JMP_JALR_RET[k].Vj = null ;
-            JMP_JALR_RET[k].Vk = null ;
-            JMP_JALR_RET[k].busy = false  ;
-            JMP_JALR_RET[k].operation = null ;
-             return true ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
         }
        
         case "BEQ" :  
         {
             System.out.println("an " + type + " is executing  ");
             BEQ[k].execution_start_cycle = CC;
-            /*try {
-            BEQ[k].Qj =null;
-            BEQ[k].Qk = null ;
-            BEQ[k].Vj = null ;
-            BEQ[k].Vk = null ;
-            BEQ[k].busy = false  ;
-            BEQ[k].operation = null ;
-            BEQ[k].rob_indx = null ;
-
-            return true ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
+           
         }
         case "ADD_SUB_ADDI" :
             {
-            //float result = execute(ADD_SUB_ADDI[k] , CC) ;
-            //rob.set_value(ADD_SUB_ADDI[k].rob_indx, result);
-            //update (ADD_SUB_ADDI[k].rob_indx  ,  result);
+            
             ADD_SUB_ADDI[k].execution_start_cycle = CC;
             System.out.println("an " + type + " is executing  ");
             
-             /*try {
-            ADD_SUB_ADDI[k].Qj =null;
-            ADD_SUB_ADDI[k].Qk = null ;
-            ADD_SUB_ADDI[k].Vj = null ;
-            ADD_SUB_ADDI[k].Vk = null ;
-            ADD_SUB_ADDI[k].busy = false  ;
-            ADD_SUB_ADDI[k].operation = null ;
-            ADD_SUB_ADDI[k].rob_indx = null ;
-
-             return true  ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
+             
         }
        
         case "NAND" :  
         {
-            //float result = execute(NAND[k] , CC) ;
-            //rob.set_value(NAND[k].rob_indx, result);
-            //update (NAND[k].rob_indx  ,  result);
+           
             NAND[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
-           /* try {
-            NAND[k].Qj =null;
-            NAND[k].Qk = null ;
-            NAND[k].Vj = null ;
-            NAND[k].Vk = null ;
-            NAND[k].busy = false  ;
-            NAND[k].operation = null ;
-            NAND[k].rob_indx = null ;
-
-            return true ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
+           
         }
         case "MUL" : 
         {
-            //float result = execute(MUL[k], CC ) ;
-            //rob.set_value(MUL[k].rob_indx, result);
-            //update (MUL[k].rob_indx  ,  result);
+            
             MUL[k].execution_start_cycle = CC ;
             System.out.println("an " + type + " is executing  ");
-           /* try {
-            MUL[k].Qj =null;
-            MUL[k].Qk = null ;
-            MUL[k].Vj = null ;
-            MUL[k].Vk = null ;
-            MUL[k].busy = false  ;
-            MUL[k].operation = null ;
-            MUL[k].rob_indx = null ;
-            return true ;}
-            catch (ArrayIndexOutOfBoundsException e)
-            {
-                System.out.println("Out Of Bounds !!");
-                return false ;
-            }*/
+           
         }
         
      }   
@@ -870,8 +719,10 @@ public boolean check (Instruction instr)
 
 public void finish_execution (int CC , ROB rob)
 {
-    float result ;
+     Float result ;
      for (int i =0; i<2 ; i++ )
+         if (LW[i].execution_start_cycle != null)
+     {
       if (CC - LW[i].execution_start_cycle >= 2 )
       {
             LW[i].Qj =null;
@@ -879,54 +730,104 @@ public void finish_execution (int CC , ROB rob)
             LW[i].Vj = null ;
             LW[i].Vk = null ;
             LW[i].busy = false  ;
+            LW[i].execution_start_cycle = null ;
+            LW[i].PC = null; 
             LW[i].operation = null ;
             LW[i].rob_indx = null ;
       }
+     }
           
      
       for (int i =0; i<2 ; i++ )
+       if (SW[i].execution_start_cycle != null)
+     {
       if (CC - SW[i].execution_start_cycle >= 2)
       {
-           SW[i].Qj =null;
+            SW[i].Qj =null;
             SW[i].Qk = null ;
             SW[i].Vj = null ;
             SW[i].Vk = null ;
             SW[i].busy = false  ;
             SW[i].operation = null ;
             SW[i].rob_indx = null ;
+            SW[i].execution_start_cycle = null ;
+            SW[i].PC = null; 
           
       }
+     }
       
       for (int i =0; i<3 ; i++ )
+           if (JMP_JALR_RET[i].execution_start_cycle != null)
+     {
       if (CC - JMP_JALR_RET[i].execution_start_cycle >= 1 )
       {
-          JMP_JALR_RET[i].Qj =null;
+          if (JMP_JALR_RET[i].operation == Instruction.JMP)
+          {
+              result = JMP_JALR_RET[i].PC + JMP_JALR_RET[i].Vj ;
+              rob.set_value(JMP_JALR_RET[i].rob_indx, result , null); //write pc+imm to rob with dest pc 
+          }
+          else
+          if (JMP_JALR_RET[i].operation == Instruction.JALR)
+          {
+              result = (float)JMP_JALR_RET[i].PC + 1 ;
+              rob.set_value(JMP_JALR_RET[i].rob_indx, result , JMP_JALR_RET[i].Vj); //write pc+imm to rob with dest pc 
+              update (NAND[i].rob_indx  ,  result);
+          } 
+          else
+              if (JMP_JALR_RET[i].operation == Instruction.RET)
+          {
+              result =  JMP_JALR_RET[i].Vj ;
+              rob.set_value(JMP_JALR_RET[i].rob_indx, result , null); //write pc+imm to rob with dest pc 
+          }
+          
+            JMP_JALR_RET[i].Qj =null;
             JMP_JALR_RET[i].Qk = null ;
             JMP_JALR_RET[i].Vj = null ;
             JMP_JALR_RET[i].Vk = null ;
             JMP_JALR_RET[i].busy = false  ;
             JMP_JALR_RET[i].operation = null ;
+            JMP_JALR_RET[i].execution_start_cycle = null ;
+            JMP_JALR_RET[i].PC = null; 
           
       }
+     }
       
       for (int i =0; i<2 ; i++ )
+      if (BEQ[i].execution_start_cycle != null)
+     { 
       if (CC - BEQ[i].execution_start_cycle >= 1 )  //CHANGE !!
       {
           result = execute(ADD_SUB_ADDI[i]) ;
-          BEQ[i].Qj =null;
+          if (result == 0) //Taken
+          {
+               result = (float)JMP_JALR_RET[i].PC  ;
+               rob.set_value(JMP_JALR_RET[i].rob_indx, result , null);
+          }
+          else
+          {
+               result =  null ;
+               rob.set_value(JMP_JALR_RET[i].rob_indx, result , null);
+          }
+              
+            BEQ[i].Qj =null;
             BEQ[i].Qk = null ;
             BEQ[i].Vj = null ;
             BEQ[i].Vk = null ;
             BEQ[i].busy = false  ;
             BEQ[i].operation = null ;
             BEQ[i].rob_indx = null ;
+            BEQ[i].execution_start_cycle = null ;
+            BEQ[i].PC = null; 
       }
-      
+     }
+      ///CONTINUE 
       for (int i =0; i<3 ; i++ )
+       if (ADD_SUB_ADDI[i].execution_start_cycle != null)
+     {
       if (CC - ADD_SUB_ADDI[i].execution_start_cycle >= 2 )
       {
           result = execute(ADD_SUB_ADDI[i]) ;
-          rob.set_value(ADD_SUB_ADDI[i].rob_indx, result);
+          rob.set_value(ADD_SUB_ADDI[i].rob_indx, result , null);
           update (ADD_SUB_ADDI[i].rob_indx  ,  result);
           ADD_SUB_ADDI[i].Qj =null;
           ADD_SUB_ADDI[i].Qk = null ;
@@ -935,14 +836,19 @@ public void finish_execution (int CC , ROB rob)
           ADD_SUB_ADDI[i].busy = false  ;
           ADD_SUB_ADDI[i].operation = null ;
           ADD_SUB_ADDI[i].rob_indx = null ;
+          ADD_SUB_ADDI[i].execution_start_cycle = null ;
+          ADD_SUB_ADDI[i].PC = null; 
              
       }
+     }
       
       for (int i =0; i<1 ; i++ )
+          if (NAND[i].execution_start_cycle != null)
+     {
       if (CC - NAND[i].execution_start_cycle >= 1)
       {
           result = execute(NAND[i]) ;
-          rob.set_value(NAND[i].rob_indx, result);
+          rob.set_value(NAND[i].rob_indx, result , null);
           update (NAND[i].rob_indx  ,  result);
             NAND[i].Qj =null;
             NAND[i].Qk = null ;
@@ -951,12 +857,17 @@ public void finish_execution (int CC , ROB rob)
             NAND[i].busy = false  ;
             NAND[i].operation = null ;
             NAND[i].rob_indx = null ;
+            NAND[i].execution_start_cycle = null ;
+            NAND[i].PC = null;
       }
+     }
       for (int i =0; i<2 ; i++ )
+           if (MUL[i].execution_start_cycle != null)
+     {
       if (CC - MUL[i].execution_start_cycle >= 8)
       {
           result = execute(MUL[i]) ;
-          rob.set_value(MUL[i].rob_indx, result);
+          rob.set_value(MUL[i].rob_indx, result , null);
           update (MUL[i].rob_indx  ,  result);
             MUL[i].Qj =null;
             MUL[i].Qk = null ;
@@ -965,8 +876,10 @@ public void finish_execution (int CC , ROB rob)
             MUL[i].busy = false  ;
             MUL[i].operation = null ;
             MUL[i].rob_indx = null ;
+            MUL[i].execution_start_cycle = null ;
+            MUL[i].PC = null;
       }
-          
+     }
 }
 
  private Float execute(Reservation_Station_Element rtrn )
@@ -999,6 +912,7 @@ public void finish_execution (int CC , ROB rob)
              result =  rtrn.Vj - rtrn.Vk ;
              }
              
+             
              return result ;
                      
          }
@@ -1009,7 +923,7 @@ private int get_ready (String type)
         case "LW" : 
         {
             for (int i =  0 ;i< LW.length ; i++)
-                if (LW[i].operation != null && LW[i].busy == true )
+                if (LW[i].operation != null && LW[i].busy == true ) //always ready
                    return i ;
             return -1 ;
         }
@@ -1017,7 +931,7 @@ private int get_ready (String type)
         case "SW" : 
             {
             for (int i =0 ;i< LW.length ; i++)
-                if (SW[i].operation != null && SW[i].busy == true )
+                if (SW[i].operation != null && SW[i].busy == true ) //always ready 
                    return i ;
             return -1 ;
         }
@@ -1025,7 +939,7 @@ private int get_ready (String type)
         case "JMP_JALR_RET" :
         {
             for (int i =0 ;i< JMP_JALR_RET.length ; i++)
-                if (JMP_JALR_RET[i].operation != null && JMP_JALR_RET[i].busy == true)
+                if (JMP_JALR_RET[i].operation != null && JMP_JALR_RET[i].busy == true && JMP_JALR_RET[i].Vj != null)
                    return i ;
             return -1 ;
         }
@@ -1062,7 +976,7 @@ private int get_ready (String type)
 }
 }
 
-void update (Integer rob_indx  , float result)
+void update (Integer rob_indx  , float result )
 {
     
         

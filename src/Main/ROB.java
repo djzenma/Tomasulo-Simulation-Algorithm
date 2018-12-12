@@ -15,7 +15,6 @@ public  class ROB implements Iterable {
     static ROB_NODE last;     // end of queue
     static int n;  // number of elements on queue
     static int last_index = -1 ;
-
    
 
     // helper linked list class
@@ -70,25 +69,64 @@ public  class ROB implements Iterable {
      *
      * @param  item the item to add
      */
-    public  int enqueue(Instruction inst) {
-        if (n <6)
-        {
-            ROB_NODE oldlast = last;
-            last = new ROB_NODE ();
-            last.dest = inst.getRegA();
-            last.index = ++ last_index ;
-            last.previous = oldlast; 
-            last.type = inst.getName();
-            if (isEmpty()) first = last;
-            else  oldlast.next = last;
-            n++  ;
-            return last_index ;
-        }
-        else 
-        {
-            System.out.println ("FULL ROB !!");
-            return -1 ;
-        }
+    public  int enqueue(Instruction inst)
+    {
+            if (inst.getName()== Instruction.JMP ||  inst.getName()== Instruction.BEQ || inst.getName()== Instruction.RET)
+            {
+                ROB_NODE oldlast = last;
+                last = new ROB_NODE ();
+                last.dest = 100;
+                last.index = ++ last_index ;
+                last.previous = oldlast; 
+                last.type = inst.getName();
+                if (isEmpty()) first = last;
+                else  oldlast.next = last;
+                n++  ; //increment size 
+                return last_index ;
+            }
+            else
+                if (inst.getName()== Instruction.JALR)
+                {
+                    ROB_NODE oldlast = last;
+                    last = new ROB_NODE ();
+                    last.dest = inst.getRegA();
+                    last.index = ++ last_index ;
+                    last.previous = oldlast; 
+                    last.type = inst.getName();
+                    if (isEmpty()) first = last;
+                    else  oldlast.next = last;
+                    n++  ; //increment size 
+                    return last_index ;
+                }
+            else
+                if (inst.getName()== Instruction.SW)
+                {
+                ROB_NODE oldlast = last;
+                last = new ROB_NODE ();
+                last.dest = null;
+                last.index = ++ last_index ;
+                last.previous = oldlast; 
+                last.type = inst.getName();
+                if (isEmpty()) first = last;
+                else  oldlast.next = last;
+                n++  ; //increment size 
+                return last_index ;
+                }
+            else
+                    
+            {
+                ROB_NODE oldlast = last;
+                last = new ROB_NODE ();
+                last.dest = inst.getRegA();
+                last.index = ++ last_index ;
+                last.previous = oldlast; 
+                last.type = inst.getName();
+                if (isEmpty()) first = last;
+                else  oldlast.next = last;
+                n++  ; //increment size 
+                return last_index ;
+            }
+        
     }
 
     /**
@@ -146,16 +184,21 @@ public  class ROB implements Iterable {
             return null ;
         }
         
-        public boolean set_value (int indx , Float value )
+        public boolean set_value (int indx , Float value , Float jalrvalue )
         {
+            
             ROB_NODE current = first  ;
             while (current != null)
              {
                     if (current.index == indx)
                     {
-                     current.value = value  ;
-                     current.ready = true ;
-                     return true ;
+                        if (current.type == Instruction.JALR)
+                            current.jalr_value2 = jalrvalue ;
+
+
+                         current.value = value  ;
+                         current.ready = true ;
+                         return true ;
                     }
                     current = current.next ;
              } 

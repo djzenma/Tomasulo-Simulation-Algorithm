@@ -8,12 +8,14 @@ public class Reservation_Station_Element {
     Float Vk ;
     Float Vj ;
     Integer Qk ; 
+    Integer PC ;
     Integer Qj ;
     Integer rob_indx ;
     Integer execution_start_cycle ;
     
     public Reservation_Station_Element()
     {
+            PC = null ;
             execution_start_cycle= null ;
             operation = null ;
             busy = false  ; 

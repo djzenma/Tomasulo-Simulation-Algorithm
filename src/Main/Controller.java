@@ -18,6 +18,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     private Memory memory;
     private ROB rob;
     private Reservation_Station rs;
+    int PC ;
 
     public Controller(){
         instrsList = Utils.fillArray();
@@ -74,8 +75,9 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         *   Issue
         */
         Instruction instr = instrQueue.peek();
-        if(rob.check() && rs.check(instr)) {
-            if(instr.getName().equals(Instruction.LW) || instr.getName().equals(Instruction.SW)) {
+        if(rob.check() && rs.check(instr)) { //If there is an empty slot in ROB & RS
+            if(instr.getName().equals(Instruction.LW) || instr.getName().equals(Instruction.SW)) 
+            { //Check if Load or Store 
                 Instruction deqIns = instrQueue.dequeue();
                 fetch(deqIns);
                 try {
@@ -97,12 +99,13 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     }
     
     private void fetch(Instruction deqIns) {
-        rs.add(deqIns, rob, rob.enqueue(deqIns));
+        rs.add(deqIns, rob, rob.enqueue(deqIns) , PC); //Write in rob and in RS
     }
     
     private void execute() {
         for(String format: Reservation_Station.formats) {
             rs.remove(format, rob, Main.CC);
+            rs.finish_execution(Main.CC,rob);
         }
     }
     

@@ -9,11 +9,13 @@ public class ROB_NODE {
     Integer dest ;
     boolean ready ;
     Float value ;
+    Float jalr_value2 ;
     ROB_NODE next;
     ROB_NODE previous;
     
     public ROB_NODE ()
     {
+        jalr_value2 = null ;
         index= null ;
         type = null; 
         dest = null ;
