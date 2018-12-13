@@ -12,6 +12,7 @@ public class Memory {
         for (int i = 0; i < CAPACITY; i++) {
             mem[i] = 0;
         }
+        mem[0] = 5;
     }
 
     public int read(int address) throws Exception {
@@ -30,5 +31,9 @@ public class Memory {
             throw new Exception("Memory Address out of range!");
         mem[address] = data;
         return true;
+    }
+    
+    public void print() {
+        System.out.println("mem[4]=" + mem[4]);
     }
 }

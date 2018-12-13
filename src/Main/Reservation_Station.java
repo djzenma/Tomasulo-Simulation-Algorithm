@@ -17,6 +17,7 @@ int SW_counter =0 ;
 Reservation_Station_Element [] JMP_JALR_RET ;
 int JMP_JALR_RET_counter =0 ;
 Reservation_Station_Element [] BEQ  ;
+int []branch_imm  = new int [2];
 int BEQ_counter =0 ;
 Reservation_Station_Element []ADD_SUB_ADDI ; 
 int ADD_SUB_ADDI_counter =0 ;
@@ -73,7 +74,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                 LW[y].rob_indx = rob_ind ;
                 LW_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
-           
+           break ;
         }
         
         case Instruction.SW :
@@ -91,7 +92,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                 SW[y].rob_indx = rob_ind ;
                 SW_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
-           
+            break ;
         }
         case Instruction.JMP:
         {
@@ -109,7 +110,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     JMP_JALR_RET[y].rob_indx = rob_ind ;
                      System.out.println(inst.getName() + " inst added!! ");
                     
-                
+                 break ;
                  
         }
         case Instruction.JALR:
@@ -149,7 +150,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     JMP_JALR_RET_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    
+                    break ; 
         }
         
          case Instruction.RET : 
@@ -191,7 +192,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     System.out.println(inst.getName() + " inst added!! ");
                     
                    
-                
+                break ; 
          }
         case Instruction.BEQ : 
         {
@@ -200,7 +201,8 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
             
                 BEQ[y].operation =  inst.getName() ;
                 BEQ[y].busy =  true ;
-                BEQ[y].PC = PC + (int)inst.getImm();
+                BEQ[y].PC = PC ;
+                branch_imm[y] = PC + (int)inst.getImm() ;
                 BEQ[y].rob_indx = rob_ind ;
                  
                 int rob_indx;
@@ -251,7 +253,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                 BEQ_counter++ ;
                 System.out.println(inst.getName() + " inst added!! ");
             
-            
+             break ;
         }
         case Instruction.ADD:
         {
@@ -312,7 +314,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                
+                break ; 
         }
          case Instruction.ADDI:
         {
@@ -348,13 +350,13 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                 
                 
-                    ADD_SUB_ADDI[y].Vk= inst.getRegC();
+                    ADD_SUB_ADDI[y].Vk= inst.getImm();
                 
                 
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                 
-                
+              break ;   
         }
         case Instruction.SUB :
         {
@@ -414,7 +416,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                 
                     ADD_SUB_ADDI_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
-                    
+                 break ;    
                    
         }
         case Instruction.NAND : 
@@ -476,7 +478,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     NAND_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                   
+                    break ;
         }
         case Instruction.MUL : 
           {
@@ -536,77 +538,105 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     MUL_counter++ ;
                     System.out.println(inst.getName() + " inst added!! ");
                     
-                    
+                     break ;
         }
         default :
               {        
                 System.out.println(inst.getName() + " failed to add ");
+                 break ;
               }
 
         }   
 }
 
- public void remove (String type, ROB rob , int CC)
+ public void remove (String type, ROB rob , int CC , int PC)
 {
- 
+
   int k = get_ready(type); //retrieves an inst with ready operands !!
-  if (k != -1)
+  if (k != -1 )
   {
      switch (type)
         {
         case "LW" : {
-            System.out.println("an " + type + " is executing  ");
+            if (LW[k].PC != PC)
+            {
+            System.out.println("a " + type + " is executing  ");
             LW[k].execution_start_cycle = CC;
+            }
+             
             
         } 
+        break ;
         case "SW" : 
         {
-            System.out.println("an " + type + " is executing  ");
+             if (SW[k].PC != PC)
+            {
+            System.out.println("a " + type + " is executing  ");
             SW[k].execution_start_cycle = CC; //stores the cycle it started execution in
+            }
+             
+            
         }
+         break ;
         case "JMP_JALR_RET" :
             {
-            
-            System.out.println("an " + type + " is executing  ");
+            if (JMP_JALR_RET[k].PC != PC)
+            {
+            System.out.println("a " + type + " is executing  ");
             JMP_JALR_RET[k].execution_start_cycle = CC;
+            }
+             
         }
-       
+        break ;
         case "BEQ" :  
         {
-            System.out.println("an " + type + " is executing  ");
+             if (BEQ[k].PC != PC)
+            {
+            System.out.println("a " + type + " is executing  ");
             BEQ[k].execution_start_cycle = CC;
+            }
+             
+             
            
         }
+         break ;
         case "ADD_SUB_ADDI" :
             {
-            
+            if (ADD_SUB_ADDI[k].PC != PC)
+            {
             ADD_SUB_ADDI[k].execution_start_cycle = CC;
-            System.out.println("an " + type + " is executing  ");
+            System.out.println("a " + type + " is executing  ");
+            }
+             
             
              
         }
-       
+        break ;
         case "NAND" :  
         {
-           
+            if (NAND[k].PC != PC)
+            {
             NAND[k].execution_start_cycle = CC ;
-            System.out.println("an " + type + " is executing  ");
-           
+            System.out.println("a " + type + " is executing  ");
+            }
         }
+         break ;
         case "MUL" : 
         {
-            
+             if (MUL[k].PC != PC)
+            {
             MUL[k].execution_start_cycle = CC ;
-            System.out.println("an " + type + " is executing  ");
-           
-        }
+            System.out.println("a " + type + " is executing  ");
+            }
+              
+         break ;
         
      }   
-                
+     }         
   }
   else
   {
-      System.out.println ("No Ready Instructions !!");
+      System.out.println ("No Ready " +type + " Instructions !!");
   }
           
 }
@@ -771,7 +801,7 @@ public void finish_execution (int CC , ROB rob)
           {
               result = JMP_JALR_RET[i].PC + 1 ;
               rob.set_value(JMP_JALR_RET[i].rob_indx, result , JMP_JALR_RET[i].Vj); //write pc+imm to rob with dest pc 
-              update (NAND[i].rob_indx  ,  result);
+              update (NAND[i].rob_indx  ,  result); //update reservation station
           } 
           else
               if (JMP_JALR_RET[i].operation == Instruction.RET)
@@ -795,18 +825,18 @@ public void finish_execution (int CC , ROB rob)
       for (int i =0; i<2 ; i++ )
       if (BEQ[i].execution_start_cycle != null)
      { 
-      if (CC - BEQ[i].execution_start_cycle >= 1 )  //CHANGE !!
+      if (CC - BEQ[i].execution_start_cycle >= 1 ) 
       {
-          result = execute(ADD_SUB_ADDI[i]) ;
+          result = execute(BEQ[i]) ;
           if (result == 0) //Taken
           {
-               result = JMP_JALR_RET[i].PC  ;
-               rob.set_value(JMP_JALR_RET[i].rob_indx, result , null);
+               result = branch_imm[i] ; //store in branch pc pc+imm while adding !!!
+               rob.set_value(BEQ[i].rob_indx, result , null);
           }
           else
           {
                result =  null ;
-               rob.set_value(JMP_JALR_RET[i].rob_indx, result , null);
+               rob.set_value(BEQ[i].rob_indx, result , null);
           }
               
             BEQ[i].Qj =null;
@@ -820,12 +850,12 @@ public void finish_execution (int CC , ROB rob)
             BEQ[i].PC = null; 
       }
      }
-      ///CONTINUE 
       for (int i =0; i<3 ; i++ )
        if (ADD_SUB_ADDI[i].execution_start_cycle != null)
      {
       if (CC - ADD_SUB_ADDI[i].execution_start_cycle >= 2 )
       {
+          System.out.println(ADD_SUB_ADDI[i].operation + "Is done Executing");
           result = execute(ADD_SUB_ADDI[i]) ;
           rob.set_value(ADD_SUB_ADDI[i].rob_indx, result , null);
           update (ADD_SUB_ADDI[i].rob_indx  ,  result);
@@ -894,7 +924,7 @@ public void finish_execution (int CC , ROB rob)
              else
              if (rtrn.operation == Instruction.SUB)
              {
-             result =  rtrn.Vj + rtrn.Vk ;
+             result =  rtrn.Vj - rtrn.Vk ;
              }
              else
              if (rtrn.operation == Instruction.MUL)
@@ -923,7 +953,7 @@ private int get_ready (String type)
         case "LW" : 
         {
             for (int i =  0 ;i< LW.length ; i++)
-                if (LW[i].operation != null && LW[i].busy == true ) //always ready
+                if (LW[i].operation != null && LW[i].busy == true &&   LW[i].execution_start_cycle == null) //always ready
                    return i ;
             return -1 ;
         }
@@ -931,7 +961,7 @@ private int get_ready (String type)
         case "SW" : 
             {
             for (int i =0 ;i< LW.length ; i++)
-                if (SW[i].operation != null && SW[i].busy == true ) //always ready 
+                if (SW[i].operation != null && SW[i].busy == true &&   SW[i].execution_start_cycle == null) //always ready 
                    return i ;
             return -1 ;
         }
@@ -939,33 +969,33 @@ private int get_ready (String type)
         case "JMP_JALR_RET" :
         {
             for (int i =0 ;i< JMP_JALR_RET.length ; i++)
-                if (JMP_JALR_RET[i].operation != null && JMP_JALR_RET[i].busy == true && JMP_JALR_RET[i].Vj != null)
+                if (JMP_JALR_RET[i].operation != null && JMP_JALR_RET[i].busy == true && JMP_JALR_RET[i].Vj != null &&   JMP_JALR_RET[i].execution_start_cycle == null)
                    return i ;
             return -1 ;
         }
         
         case "BEQ" :
         { 
-            for (int i =0 ;i< JMP_JALR_RET.length ; i++)
-                if (JMP_JALR_RET[i].operation != null && JMP_JALR_RET[i].Vj != null && JMP_JALR_RET[i].Vk != null && JMP_JALR_RET[i].busy == true)
+            for (int i =0 ;i< BEQ.length ; i++)
+                if (BEQ[i].operation != null && BEQ[i].Vj != null && BEQ[i].Vk != null && BEQ[i].busy == true &&   BEQ[i].execution_start_cycle == null)
                    return i ;
             return -1 ;
         }
         case "ADD_SUB_ADDI" :
         { for (int i =0 ;i< JMP_JALR_RET.length ; i++)
-                if (ADD_SUB_ADDI[i].operation != null && ADD_SUB_ADDI[i].Vj != null && ADD_SUB_ADDI[i].Vk != null && ADD_SUB_ADDI[i].busy == true )
+                if (ADD_SUB_ADDI[i].operation != null && ADD_SUB_ADDI[i].Vj != null && ADD_SUB_ADDI[i].Vk != null && ADD_SUB_ADDI[i].busy == true &&   ADD_SUB_ADDI[i].execution_start_cycle == null)
                    return i ;
             return -1 ;
         }
         case "NAND" :  
-            { for (int i =0 ;i< NAND.length ; i++)
-                if (NAND[i].operation != null && NAND[i].Vj != null && NAND[i].Vk != null && NAND[i].busy == true)
+        { for (int i =0 ;i< NAND.length ; i++)
+                if (NAND[i].operation != null && NAND[i].Vj != null && NAND[i].Vk != null && NAND[i].busy == true &&    NAND[i].execution_start_cycle == null)
                    return i ;
             return -1 ;
         }
-        case "MULT" :
+        case "MUL" :
              { for (int i =0 ;i< MUL.length ; i++)
-                if (MUL[i].operation != null && MUL[i].Vj != null && MUL[i].Vk != null && MUL[i].busy == true )
+                if (MUL[i].operation != null && MUL[i].Vj != null && MUL[i].Vk != null && MUL[i].busy == true &&   MUL[i].execution_start_cycle == null)
                    return i ;
             return -1 ;
         }
@@ -978,7 +1008,6 @@ private int get_ready (String type)
 
 void update (Integer rob_indx  , int result )
 {
-    
         
             for (int i=0 ;i<BEQ.length ; i++)
             {
@@ -991,6 +1020,18 @@ void update (Integer rob_indx  , int result )
                     BEQ[i].Vk= result ;
                 }
             }
+            
+            for (int i=0 ;i<JMP_JALR_RET.length ; i++)
+            {
+                if (JMP_JALR_RET[i].Qj == rob_indx)
+                {
+                    JMP_JALR_RET[i].Vj = result ;
+                }
+                if (JMP_JALR_RET[i].Qk == rob_indx)
+                {
+                    JMP_JALR_RET[i].Vk= result ;
+                }
+            }
         
        
        
@@ -999,6 +1040,7 @@ void update (Integer rob_indx  , int result )
                 if (ADD_SUB_ADDI[i].Qj == rob_indx)
                 {
                     ADD_SUB_ADDI[i].Vj = result ;
+                    System.out.print("Updating Result!!!!!!");
                 }
                 if (ADD_SUB_ADDI[i].Qk == rob_indx)
                 {
@@ -1034,10 +1076,10 @@ void update (Integer rob_indx  , int result )
     public Iterator iterator( ) {
         Iterator<Reservation_Station_Element> it ;
         Scanner reader = new Scanner(System.in);  // Reading from System.in
-        System.out.println("Enter Reservation Station Name: ");
-        String obj = reader.next(); // Scans the next token of the input as an int.
-        reader.close();
-
+        //System.out.println("Enter Reservation Station Name: ");
+        //String obj = reader.next(); // Scans the next token of the input as an int.
+        //reader.close();
+        String obj = "MUL" ;
         switch (obj)
         {
         case "LW" : {it =  Arrays.asList(LW).iterator();  break;}
@@ -1046,7 +1088,7 @@ void update (Integer rob_indx  , int result )
         case "BEQ" : { it = Arrays.asList(BEQ).iterator();  break;}
         case "ADD_SUB_ADDI" :{ it = Arrays.asList(ADD_SUB_ADDI).iterator();  break;}
         case "NAND" :  {it = Arrays.asList(NAND).iterator();  break;}
-        case "MULT" :{ it = Arrays.asList(MUL).iterator();  break;}
+        case "MUL" :{ it = Arrays.asList(MUL).iterator();  break;}
         default :
         { it = null ;  break;}
                 

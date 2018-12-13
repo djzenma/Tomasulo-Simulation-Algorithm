@@ -6,9 +6,12 @@
 package Main;
 
 import Instruction.Instruction;
+import MemoryAndBuffer.Memory;
 import MemoryAndBuffer.RegFile;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public  class ROB implements Iterable {
     static ROB_NODE first;    // beginning of queue
@@ -47,7 +50,7 @@ public  class ROB implements Iterable {
     }
     
      public  boolean check() {
-         if (n<6)
+         if (n <= 6 )
         return true;
          else 
         return false ;
@@ -103,7 +106,7 @@ public  class ROB implements Iterable {
                 {
                 ROB_NODE oldlast = last;
                 last = new ROB_NODE ();
-                last.dest = null;
+                last.dest = 101;
                 last.index = ++ last_index ;
                 last.previous = oldlast; 
                 last.type = inst.getName();
@@ -115,6 +118,7 @@ public  class ROB implements Iterable {
             else
                     
             {
+             
                 ROB_NODE oldlast = last;
                 last = new ROB_NODE ();
                 last.dest = inst.getRegA();
@@ -125,6 +129,7 @@ public  class ROB implements Iterable {
                 else  oldlast.next = last;
                 n++  ; //increment size 
                 return last_index ;
+            
             }
         
     }
@@ -146,14 +151,18 @@ public  class ROB implements Iterable {
 
     public int find_dest(int reg) 
     { 
-        System.out.println("REG" + reg);
-         ROB_NODE current = last ;
+        //System.out.println("REG" + reg);
+         ROB_NODE current = first ;
        while (current != null) 
        {
             ROB_NODE item = current;
-            current = current.previous;
+            current = current.next;
+            //System.out.println ("Hnna " + reg +" "+ item.dest +" " +item.index);
             if (item.dest == reg)
-            return item.index;
+            {
+             // System.out.println ("Hnaak " + reg +" "+ item.dest+ " " +item.index);
+              return item.index;
+            }
        }
        return -1 ;
     }
@@ -183,7 +192,7 @@ public  class ROB implements Iterable {
             System.out.println("ROB ERROR");
             return null ;
         }
-        
+ 
         public boolean set_value (int indx , Integer value , Integer jalrvalue )
         {
             
@@ -192,8 +201,8 @@ public  class ROB implements Iterable {
              {
                     if (current.index == indx)
                     {
-                        if (current.type == Instruction.JALR)
-                            current.jalr_value2 = jalrvalue ;
+                        if (current.type == Instruction.JALR  || current.type == Instruction.SW )
+                            current.jalr_value2 = jalrvalue;
 
 
                          current.value = value  ;
@@ -224,15 +233,53 @@ public  class ROB implements Iterable {
         
         return s.toString();
     }
-    public void commit ()
-    {
+    public Integer commit (Memory mem)
+    { Integer PC = null ;
         if (first.ready)
         {
+            if (first.type == Instruction.JMP || first.type == Instruction.RET)
+                PC = first.value ;
+            else
+            if (first.type == Instruction.BEQ)
+            {
+                if (first.value  != null)
+                {
+                    PC = first.value ;
+                }
+                      
+            }
+            else 
+            if (first.type == Instruction.JALR)
+            {
+                PC = first.jalr_value2;
+                RegFile.write(first.dest, first.value);
+            }
+            else
+            if (first.type == Instruction.SW)
+            {
+                try {
+                    mem.write(first.jalr_value2, first.value);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            else
             RegFile.write(first.dest, first.value);
+            
+                    
+            first= first.next ;
+             n-- ;      
         }
-        first= first.next ;
-        n-- ;
+        return PC ;
     }
+ void flush ()
+ {
+     first = last.next ;
+     last = first ;
+     
+    
+     
+ }
     
  public  Iterator iterator()  {
         return new ListIterator(first);  

@@ -1,7 +1,9 @@
 package Instruction;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function.Consumer;
 
 public class InstructionQueue {
     private Queue<Instruction> instrQueue;
@@ -35,5 +37,17 @@ public class InstructionQueue {
     
     public Instruction peek() {
         return instrQueue.peek();
+    }
+    
+    public boolean searchForPc(int pc) {
+        for(Instruction i: instrQueue) {
+            if(i.getPc() == pc)
+                return true;
+        }
+        return false;
+    }
+    
+    public  boolean isEmpty() {
+        return instrQueue.isEmpty();
     }
 }

@@ -9,6 +9,9 @@ public class RegFile {
         rf = new int[8];
         for (int i=0; i<rf.length; i++) 
             rf[i] = 0;
+        
+        rf[3]=3 ;
+        rf[1]=1 ;
     }
             
         

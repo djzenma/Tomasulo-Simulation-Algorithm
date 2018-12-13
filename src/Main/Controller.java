@@ -8,6 +8,8 @@ import MemoryAndBuffer.Memory;
 
 import java.util.ArrayList;
 import MemoryAndBuffer.RegFile;
+import java.util.Iterator;
+import java.util.function.Consumer;
 
 
 
@@ -18,7 +20,8 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     private Memory memory;
     private ROB rob;
     private Reservation_Station rs;
-
+    private int clockCycle;
+ 
     public Controller(){
         loadBuffer = new LoadBuffer(this);
         memory = new Memory();
@@ -30,8 +33,9 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         int pc = 0;
         for (Instruction i: instrsList) {
             instrQueue.enqueue(i, pc);
-            pc += 4;
+            pc += 1;
         }
+        clockCycle = 0;
     }
 
 
@@ -46,15 +50,16 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     }
 
     @Override
-    public boolean memoryLoadDone(int regDestination, int data) {
-        return RegFile.write(regDestination, data);
+    public boolean memoryLoadDone(int rob_index, int data) {
+        //System.out.println("HNNA HNNA HNNA");
+        rs.update (rob_index,  data);
+        return rob.set_value(rob_index, data , null);
     }
 
     @Override
-    public boolean storeInMem(int address, int data) {
+    public boolean storeInMem(int rob_index, int address, int data) {
         try {
-            memory.write(address, data);
-            return true;
+             return rob.set_value(rob_index, data , address);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -63,23 +68,38 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
 
     // always @ posedge clk
     @Override
-    public void didUpdate() {
+    public void didUpdate(int CC) {
+        
         /*
         *   Issue
         */
-        Instruction instr = instrQueue.peek();
-        if(rob.check() && rs.check(instr)) {
-            if(instr.getName().equals(Instruction.LW) || instr.getName().equals(Instruction.SW)) {
-                if(instr.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
-                    loadBufferLogic();
+        if(CC % 2 == 1) {
+            clockCycle++;
+            System.out.println("Cycle " + clockCycle);
+        }
+            
+        
+        Instruction instr1 = null;
+        
+            instr1 = instrQueue.peek();
+        //System.out.println("Inst" + instr.getName());
+        if(rob.check() && rs.check(instr1)) {
+            if(instr1.getName().equals(Instruction.LW) || instr1.getName().equals(Instruction.SW)) {
+                if(instr1.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
+                    Instruction deqIns = instrQueue.dequeue();
+                    loadBufferLogic(deqIns);
+                   // rob.enqueue(deqIns) ;
+                    //fetch(deqIns);
                 }
-                else if(instr.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
-                    loadBufferLogic();
+                else if(instr1.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
+                    Instruction deqIns = instrQueue.dequeue();
+                    loadBufferLogic(deqIns);
+                    //rob.enqueue(deqIns) ;
+                    //fetch(deqIns);
                 }
                 else {
                     // TODO::wait
                 }
-
             }
             else {
                 Instruction deqIns = instrQueue.dequeue();
@@ -88,29 +108,66 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             /*
                 * Execute and Write Back
             */
-            execute();
-            rob.commit();
+            //nextCycle(CC);
+
         }
+        
+            execute(instr1);
+            Integer pcIn = rob.commit(memory);
+            System.out.println (pcIn);
+            
+            boolean found = false;
+            Instruction branchedInstr = null;
+            if(pcIn != null) {
+                // Branch
+                rob.flush();
+                if(instrQueue.searchForPc(pcIn)) {
+                    while(!instrQueue.isEmpty() && !found) {
+                        branchedInstr = instrQueue.peek();
+                        if(branchedInstr.getPc() == pcIn) 
+                            found = true;
+                        else
+                            instrQueue.dequeue();
+                    }
+                }        
+            }
+            
+            
+            Iterator it = rob.iterator();
+           Iterator itRs = rs.iterator();
+           it.forEachRemaining(new Consumer() {
+                @Override
+                public void accept(Object t) {
+                    System.out.println("ROB: " + t.toString());
+                }
+            });
+           itRs.forEachRemaining(new Consumer() {
+                @Override
+                public void accept(Object t) {
+                    System.out.println("RS: " + t.toString());
+                }
+            });
+           memory.print();
     }
 
 
-    
-    private void fetch(Instruction deqIns) {
-        rs.add(deqIns, rob, rob.enqueue(deqIns), deqIns.getPc());
+    private int fetch(Instruction deqIns) {
+        int indx = rob.enqueue(deqIns) ;
+        rs.add(deqIns, rob, indx , deqIns.getPc());
+        return indx ;
     }
     
-    private void execute() {
+    private void execute(Instruction deqIns) {
         for(String format: Reservation_Station.formats) {
-            rs.remove(format, rob, Main.CC);
+            rs.remove(format, rob, Main.CC ,deqIns.getPc()); //store start cycle in rs 
             rs.finish_execution(Main.CC, rob);
         }
     }
 
-    private void loadBufferLogic() {
-        Instruction deqIns = instrQueue.dequeue();
-        fetch(deqIns);
+    private void loadBufferLogic(Instruction deqIns) {
+        
         try {
-            loadBuffer.insertInstr(deqIns);
+            loadBuffer.insertInstr(deqIns, fetch(deqIns));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

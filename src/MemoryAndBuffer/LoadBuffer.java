@@ -15,6 +15,7 @@ public class LoadBuffer {
 
     private int[] buffer;   // stores the addresses
     private MemoryInterface memInterface;
+    private NextCCInterface clkInterface;
 
     public LoadBuffer(Controller controller) {
 
@@ -25,13 +26,14 @@ public class LoadBuffer {
         load_size = 0;
         store_size = 0;
         memInterface = (MemoryInterface) controller;
+        clkInterface = Main.clkH;
     }
 
 
     /*
     *   Inserts Instruction in Load Buffer and returns Loaded Data from Memory
     * */
-    public boolean insertInstr(Instruction instr) throws Exception {
+    public boolean insertInstr(Instruction instr, int rob_index) throws Exception {
         if( !freeSlot(instr) ) {
             return false;
         }
@@ -52,8 +54,6 @@ public class LoadBuffer {
             // CC 1: Issuing
             // Starting Computing Address:
             // A = Imm
-
-            System.out.println("Expected : 1, Found: " + Main.CC);
 
             buffer[index] = (int) instr.getImm();
             System.out.println("CC: " + Main.CC + " Load Buffer: entry #" + index + ", Address: " + buffer[index]);
@@ -84,14 +84,17 @@ public class LoadBuffer {
                     return false;
                 // Callback once done
                 else
-                    return memInterface.memoryLoadDone(instr.getRegA(), loadedValue);
+                {
+                    //System.out.println ("HNNA!!" + rob_index + " "+loadedValue );
+                    return memInterface.memoryLoadDone(rob_index, loadedValue);
+                }
             }
             // Case Store
             else {
                 // Free the slot
                 store_size--;
                 // Store in Memory
-                return memInterface.storeInMem(buffer[index], instr.getRegA());
+                return memInterface.storeInMem(rob_index, buffer[index], instr.getRegA());
             }
         }
     }
@@ -124,6 +127,7 @@ public class LoadBuffer {
         boolean flag= true;
         while(flag) {
             System.out.print("");
+            clkInterface.nextCycle(true);
             if (cc < Main.CC) {
                 flag = false;
             }
@@ -133,9 +137,13 @@ public class LoadBuffer {
     public interface MemoryInterface {
         // Load Interface
         int loadFromMem(int address);
-        boolean memoryLoadDone(int regDestination, int data);
+        boolean memoryLoadDone(int rob_index, int data);
 
         // Store Interface
-        boolean storeInMem(int address, int data);
+        boolean storeInMem(int rob_index, int address, int data);
+    }
+    
+    public interface NextCCInterface {
+        void nextCycle(boolean loadEx);
     }
 }
