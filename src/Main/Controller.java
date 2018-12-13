@@ -9,18 +9,20 @@ import MemoryAndBuffer.Memory;
 import java.util.ArrayList;
 import MemoryAndBuffer.RegFile;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
 
 
 public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface{
     private ArrayList<Instruction> instrsList;
-    private InstructionQueue instrQueue;
+    public InstructionQueue instrQueue;
     private LoadBuffer loadBuffer;
     private Memory memory;
-    private ROB rob;
+    public ROB rob;
     private Reservation_Station rs;
     private int clockCycle;
+    Integer obj =null;
  
     public Controller(){
         loadBuffer = new LoadBuffer(this);
@@ -69,51 +71,88 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     // always @ posedge clk
     @Override
     public void didUpdate(int CC) {
+         if (obj == null)
+        {
+        Scanner reader = new Scanner(System.in);  // Reading from System.in
+        Scanner in = new Scanner(System.in);
+        System.out.println("Would You Like to Run Cycle_by_Cycle? (1/0)"); 
+ 	obj = in.nextInt();
+        }
+        Integer pcIn = null ;
+        Integer  pcPredict = null ;
         
         /*
         *   Issue
         */
-        if(CC % 2 == 1) {
-            clockCycle++;
-            System.out.println("Cycle " + clockCycle);
-        }
+       // if(CC % 2 == 1) {
+           // clockCycle++;
+            System.out.println("Cycle " + CC);
+       // }
             
         
-        Instruction instr1 = null;
+        Instruction instr1 = null ;
+        Instruction [] deqIns = new Instruction [2];
+        for (int i  = 0 ; i < 2 ; i++)
+        {
+           deqIns[i] = null ;
+        }
         
-            instr1 = instrQueue.peek();
+        
+            
         //System.out.println("Inst" + instr.getName());
-        if(rob.check() && rs.check(instr1)) {
-            if(instr1.getName().equals(Instruction.LW) || instr1.getName().equals(Instruction.SW)) {
-                if(instr1.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
-                    Instruction deqIns = instrQueue.dequeue();
-                    loadBufferLogic(deqIns);
-                   // rob.enqueue(deqIns) ;
-                    //fetch(deqIns);
-                }
-                else if(instr1.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
-                    Instruction deqIns = instrQueue.dequeue();
-                    loadBufferLogic(deqIns);
-                    //rob.enqueue(deqIns) ;
-                    //fetch(deqIns);
-                }
-                else {
-                    // TODO::wait
+        for (int i =0 ;i< 2 ;i++)
+        {
+            instr1 = instrQueue.peek();
+            if(instr1 != null) {
+                if(rob.check() && rs.check(instr1)) 
+                {
+                    if(instr1.getName().equals(Instruction.LW) || instr1.getName().equals(Instruction.SW)) {
+                        if(instr1.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
+                             deqIns[i] = instrQueue.dequeue();
+                            loadBufferLogic(deqIns[i]);
+                           // rob.enqueue(deqIns[i]) ;
+                            //fetch(deqIns[i]);
+                        }
+                        else if(instr1.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
+                           deqIns[i] = instrQueue.dequeue();
+                            loadBufferLogic(deqIns[i]);
+                            //rob.enqueue(deqIns[i]) ;
+                            //fetch(deqIns[i]);
+                        }
+                        else {
+                            // TODO::wait
+                        }
+                    }
+                    else {
+                         deqIns[i] = instrQueue.dequeue();
+                        if (deqIns[i].getName() == Instruction.BEQ)
+                                {
+                                    if (deqIns[i].getImm() <0)
+                                        pcPredict = deqIns[i].getPc() + deqIns[i].getImm();
+                                    else 
+                                        pcPredict = deqIns[i].getPc() + 1;
+                                }
+                        else 
+                             pcPredict = deqIns[i].getPc() + 1;
+
+                        fetch(deqIns[i]);
+                    }
                 }
             }
-            else {
-                Instruction deqIns = instrQueue.dequeue();
-                fetch(deqIns);
-            }
+        
             /*
                 * Execute and Write Back
             */
             //nextCycle(CC);
+            
 
         }
-        
-            execute(instr1);
-            Integer pcIn = rob.commit(memory);
+        execute(deqIns[0]);
+        execute(deqIns[0]);
+            
+           for (int i=0 ;i<2 ;i++)
+           {
+             pcIn = rob.commit(memory);
             System.out.println (pcIn);
             
             boolean found = false;
@@ -122,17 +161,24 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                 // Branch
                 rob.flush();
                 if(instrQueue.searchForPc(pcIn)) {
-                    while(!instrQueue.isEmpty() && !found) {
+                    while(!instrQueue.isEmpty() || !found) {
                         branchedInstr = instrQueue.peek();
                         if(branchedInstr.getPc() == pcIn) 
                             found = true;
                         else
                             instrQueue.dequeue();
                     }
-                }        
+                }  
             }
             
             
+            }
+            
+       
+        
+        
+        if (obj == 1)
+        {
             Iterator it = rob.iterator();
            Iterator itRs = rs.iterator();
            it.forEachRemaining(new Consumer() {
@@ -148,6 +194,9 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                 }
             });
            memory.print();
+        }
+        
+            
     }
 
 

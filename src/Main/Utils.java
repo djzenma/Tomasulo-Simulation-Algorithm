@@ -9,27 +9,41 @@ public class Utils {
     public static ArrayList<Instruction> fillArray() {
         Instruction addi = null;
         Instruction sub = null;
-        Instruction lw = null;
+        //Instruction lw = null;
         Instruction sub2 = null;
-        Instruction sub3 = null;
+        Instruction mul = null;
+        Instruction mul2 = null;
+        Instruction nand = null;
+        Instruction add = null;
+
         try {
-            //lw = new Instruction(Instruction.SW, Instruction.FORMAT_LW_SW , 3 , 0, 4);
-            addi = new Instruction(Instruction.ADDI, Instruction.FORMAT_ARITHMETIC_IMM, 1, 0, 2);
-            sub = new Instruction(Instruction.SUB, Instruction.FORMAT_ARITHMETIC, 0, 0, 0);
-            sub2 = new Instruction(Instruction.MUL, Instruction.FORMAT_ARITHMETIC, 0, 0, 0);
-            sub3 = new Instruction(Instruction.MUL, Instruction.FORMAT_ARITHMETIC, 0, 0, 0);
-           
+            //lw = new Instruction(Instruction.LW, Instruction.FORMAT_LW_SW , 3 , 0, 4);
+            add = new Instruction(Instruction.ADD, Instruction.FORMAT_ARITHMETIC, 0, 0, 0);
+            addi = new Instruction(Instruction.ADDI, Instruction.FORMAT_ARITHMETIC_IMM, 4, 0, 2);
+            sub = new Instruction(Instruction.SUB, Instruction.FORMAT_ARITHMETIC, 2, 3, 1);
+            mul = new Instruction(Instruction.MUL, Instruction.FORMAT_ARITHMETIC, 5, 3, 3);
+             mul2 = new Instruction(Instruction.MUL, Instruction.FORMAT_ARITHMETIC, 6, 3, 3);
+            nand = new Instruction(Instruction.NAND, Instruction.FORMAT_ARITHMETIC, 6, 1, 3);
+            
             
         } catch (Exception e) {
             e.printStackTrace();
         }
         ArrayList<Instruction> instrsList = new ArrayList<Instruction>(){};
         
-       // instrsList.add(lw);
+        //instrsList.add(lw);
+        
+        instrsList.add(mul);
+        instrsList.add(mul2);
+        instrsList.add(nand);
         instrsList.add(addi);
         instrsList.add(sub);
-        instrsList.add(sub2);
-        instrsList.add(sub3);
+        instrsList.add(add);
+        instrsList.add(addi);
+        instrsList.add(addi);
+        instrsList.add(addi);
+        instrsList.add(addi);
+
       
         
 

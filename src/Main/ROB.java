@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Main;
 
 import Instruction.Instruction;
@@ -20,8 +16,6 @@ public  class ROB implements Iterable {
     static int last_index = -1 ;
    
 
-    // helper linked list class
-   
     /**
      * Initializes an empty queue.
      */
@@ -157,10 +151,8 @@ public  class ROB implements Iterable {
        {
             ROB_NODE item = current;
             current = current.next;
-            //System.out.println ("Hnna " + reg +" "+ item.dest +" " +item.index);
             if (item.dest == reg)
             {
-             // System.out.println ("Hnaak " + reg +" "+ item.dest+ " " +item.index);
               return item.index;
             }
        }

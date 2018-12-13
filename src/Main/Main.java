@@ -27,9 +27,15 @@ public class Main{
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                    clkInterface.didUpdate(CC);
-                    CC++;
-                    RegFile.print();
+                    if(controller.rob.isEmpty() && controller.instrQueue.isEmpty()) {
+                        timer.cancel();
+                        System.exit(0);
+                    }
+                    else {
+                        clkInterface.didUpdate(CC);
+                        CC++;
+                        RegFile.print();
+                    }
                 }
             }
         , 1000, 1000);
