@@ -549,7 +549,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         }   
 }
 
- public void remove (String type, ROB rob , int CC , int PC , int PC2)
+ public void remove (String type, ROB rob , int CC , Integer PC , Integer PC2)
 {
 
   int k = get_ready(type); //retrieves an inst with ready operands !!
@@ -559,7 +559,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         {
         case "LW" : 
         {
-            if (LW[k].PC != PC && LW[k].PC != PC2)
+            if (LW[k].PC != PC && LW[k].PC != PC2 || (PC==null && PC2==null))
             {
             System.out.println("a " + LW[k].operation + " is executing  ");
             LW[k].execution_start_cycle = CC;
@@ -570,7 +570,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "SW" : 
         {
-             if (SW[k].PC != PC &&  SW[k].PC != PC2)
+             if (SW[k].PC != PC &&  SW[k].PC != PC2 || (PC==null && PC2==null))
             {
             System.out.println("a " + SW[k].operation + " is executing  ");
             SW[k].execution_start_cycle = CC; //stores the cycle it started execution in
@@ -581,7 +581,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "JMP_JALR_RET" :
             {
-            if (JMP_JALR_RET[k].PC != PC && JMP_JALR_RET[k].PC != PC2)
+            if (JMP_JALR_RET[k].PC != PC && JMP_JALR_RET[k].PC != PC2 || (PC==null && PC2==null))
             {
             System.out.println("a " + JMP_JALR_RET[k].operation + " is executing  ");
             JMP_JALR_RET[k].execution_start_cycle = CC;
@@ -591,7 +591,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "BEQ" :  
         {
-             if (BEQ[k].PC != PC && BEQ[k].PC != PC2)
+             if (BEQ[k].PC != PC && BEQ[k].PC != PC2 || (PC==null && PC2==null))
             {
             System.out.println("a " + BEQ[k].operation + " is executing  ");
             BEQ[k].execution_start_cycle = CC;
@@ -603,7 +603,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "ADD_SUB_ADDI" :
             {
-            if (ADD_SUB_ADDI[k].PC != PC && ADD_SUB_ADDI[k].PC != PC2)
+            if (ADD_SUB_ADDI[k].PC != PC && ADD_SUB_ADDI[k].PC != PC2 || (PC==null && PC2==null))
             {
             ADD_SUB_ADDI[k].execution_start_cycle = CC;
             System.out.println("a " + ADD_SUB_ADDI[k].operation + " is executing  ");
@@ -615,7 +615,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "NAND" :  
         {
-            if (NAND[k].PC != PC && NAND[k].PC != PC2)
+            if (NAND[k].PC != PC && NAND[k].PC != PC2 || (PC==null && PC2==null))
             {
             NAND[k].execution_start_cycle = CC ;
             System.out.println("a " + NAND[k].operation + " is executing  ");
@@ -624,7 +624,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "MUL" : 
         {
-             if (MUL[k].PC != PC && MUL[k].PC != PC2)
+             if (MUL[k].PC != PC && MUL[k].PC != PC2 || (PC==null && PC2==null))
             {
             MUL[k].execution_start_cycle = CC ;
             System.out.println("a " + MUL[k].operation + " is executing  ");
@@ -1024,6 +1024,11 @@ private int get_ready (String type)
         }
 }
 }
+
+    public int getNumExecutedInstructions() {
+        return (LW_counter + SW_counter + JMP_JALR_RET_counter +
+                BEQ_counter + ADD_SUB_ADDI_counter + NAND_counter + MUL_counter);
+    }
 
 void update (Integer rob_indx  , int result )
 {
