@@ -143,7 +143,7 @@ public  class ROB implements Iterable {
         return item;
     }
 
-    public int find_dest(int reg) 
+    public int find_dest(int reg , int inst_indx) 
     { 
         //System.out.println("REG" + reg);
          ROB_NODE current = first ;
@@ -151,7 +151,7 @@ public  class ROB implements Iterable {
        {
             ROB_NODE item = current;
             current = current.next;
-            if (item.dest == reg)
+            if (item.dest == reg && item.index != inst_indx)
             {
               return item.index;
             }

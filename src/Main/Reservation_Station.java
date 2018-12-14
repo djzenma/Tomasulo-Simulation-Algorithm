@@ -125,7 +125,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     JMP_JALR_RET[y].PC = PC ;
                     
                     int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(),  JMP_JALR_RET[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -163,7 +163,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     JMP_JALR_RET[y].PC = PC ;
                     
                     int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegA());
+                    rob_indx = rob.find_dest(inst.getRegA(), JMP_JALR_RET[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -205,8 +205,8 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                 branch_imm[y] = (int)inst.getImm() ;
                 BEQ[y].rob_indx = rob_ind ;
                  
-                int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegA());
+                   int rob_indx;
+                    rob_indx = rob.find_dest(inst.getRegA(), BEQ[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -229,7 +229,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(), BEQ[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -266,7 +266,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     ADD_SUB_ADDI[y].PC = PC ;
                     
                     int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(),  ADD_SUB_ADDI[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -289,7 +289,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegC());
+                    rob_indx = rob.find_dest(inst.getRegC(),  ADD_SUB_ADDI[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -327,7 +327,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     ADD_SUB_ADDI[y].PC = PC ;
                     
                     int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(), ADD_SUB_ADDI[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -369,7 +369,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     ADD_SUB_ADDI[y].PC = PC ;
                     
                      int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(), ADD_SUB_ADDI[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -392,7 +392,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegC());
+                    rob_indx = rob.find_dest(inst.getRegC(), ADD_SUB_ADDI[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -430,7 +430,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     NAND[y].PC = PC ;
                     
                      int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(), NAND[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -453,7 +453,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegC());
+                    rob_indx = rob.find_dest(inst.getRegC(), NAND[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -490,7 +490,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     MUL[y].rob_indx = rob_ind ;
                     MUL[y].PC = PC ;
                      int rob_indx;
-                    rob_indx = rob.find_dest(inst.getRegB());
+                    rob_indx = rob.find_dest(inst.getRegB(), MUL[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -513,7 +513,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
                     }
                      
                 
-                    rob_indx = rob.find_dest(inst.getRegC());
+                    rob_indx = rob.find_dest(inst.getRegC(), MUL[y].rob_indx);
                     if (rob_indx == -1 ) //not found in ROB
                     {
                         
@@ -549,7 +549,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         }   
 }
 
- public void remove (String type, ROB rob , int CC , int PC)
+ public void remove (String type, ROB rob , int CC , int PC , int PC2)
 {
 
   int k = get_ready(type); //retrieves an inst with ready operands !!
@@ -559,7 +559,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         {
         case "LW" : 
         {
-            if (LW[k].PC != PC)
+            if (LW[k].PC != PC && LW[k].PC != PC2)
             {
             System.out.println("a " + LW[k].operation + " is executing  ");
             LW[k].execution_start_cycle = CC;
@@ -570,7 +570,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "SW" : 
         {
-             if (SW[k].PC != PC)
+             if (SW[k].PC != PC &&  SW[k].PC != PC2)
             {
             System.out.println("a " + SW[k].operation + " is executing  ");
             SW[k].execution_start_cycle = CC; //stores the cycle it started execution in
@@ -581,7 +581,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "JMP_JALR_RET" :
             {
-            if (JMP_JALR_RET[k].PC != PC)
+            if (JMP_JALR_RET[k].PC != PC && JMP_JALR_RET[k].PC != PC2)
             {
             System.out.println("a " + JMP_JALR_RET[k].operation + " is executing  ");
             JMP_JALR_RET[k].execution_start_cycle = CC;
@@ -591,7 +591,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "BEQ" :  
         {
-             if (BEQ[k].PC != PC)
+             if (BEQ[k].PC != PC && BEQ[k].PC != PC2)
             {
             System.out.println("a " + BEQ[k].operation + " is executing  ");
             BEQ[k].execution_start_cycle = CC;
@@ -603,7 +603,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "ADD_SUB_ADDI" :
             {
-            if (ADD_SUB_ADDI[k].PC != PC)
+            if (ADD_SUB_ADDI[k].PC != PC && ADD_SUB_ADDI[k].PC != PC2)
             {
             ADD_SUB_ADDI[k].execution_start_cycle = CC;
             System.out.println("a " + ADD_SUB_ADDI[k].operation + " is executing  ");
@@ -615,7 +615,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
         break ;
         case "NAND" :  
         {
-            if (NAND[k].PC != PC)
+            if (NAND[k].PC != PC && NAND[k].PC != PC2)
             {
             NAND[k].execution_start_cycle = CC ;
             System.out.println("a " + NAND[k].operation + " is executing  ");
@@ -624,7 +624,7 @@ public void add (Instruction inst , ROB rob , int rob_ind , int PC)
          break ;
         case "MUL" : 
         {
-             if (MUL[k].PC != PC)
+             if (MUL[k].PC != PC && MUL[k].PC != PC2)
             {
             MUL[k].execution_start_cycle = CC ;
             System.out.println("a " + MUL[k].operation + " is executing  ");

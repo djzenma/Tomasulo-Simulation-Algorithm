@@ -144,11 +144,11 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                 * Execute and Write Back
             */
             //nextCycle(CC);
-            
+             
 
         }
-        execute(deqIns[0]);
-        execute(deqIns[0]);
+       execute(deqIns[0], deqIns[1]);
+        execute(deqIns[0], deqIns[1]);
             
            for (int i=0 ;i<2 ;i++)
            {
@@ -206,9 +206,9 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         return indx ;
     }
     
-    private void execute(Instruction deqIns) {
+    private void execute(Instruction deqIns , Instruction deqIns2) {
         for(String format: Reservation_Station.formats) {
-            rs.remove(format, rob, Main.CC ,deqIns.getPc()); //store start cycle in rs 
+            rs.remove(format, rob, Main.CC ,deqIns.getPc() ,deqIns2.getPc() ); //store start cycle in rs 
             rs.finish_execution(Main.CC, rob);
         }
     }
