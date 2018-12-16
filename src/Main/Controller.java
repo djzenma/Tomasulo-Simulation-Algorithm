@@ -25,6 +25,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     Integer obj = null;
     private Integer pcPredict;
     private Instruction prevInstr;
+    public int mispredictionNum;
 
     public Controller() {
         loadBuffer = new LoadBuffer(this);
@@ -42,6 +43,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         clockCycle = 0;
         pcPredict = 0;
         prevInstr = null;
+        mispredictionNum = 0;
     }
 
 
@@ -104,6 +106,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                 if (instr1.getPc() != pcPredict) {
                     if(prevInstr != null && prevInstr.getName().equals(Instruction.BEQ)) {
                         refillQueue(pcPredict);
+                        mispredictionNum++;
                         System.out.println("misprediction " + instr1.getName());
                     }
                 }

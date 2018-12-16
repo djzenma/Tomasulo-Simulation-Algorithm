@@ -29,6 +29,10 @@ public class Main{
             public void run() {
                     if(controller.rob.isEmpty() && controller.instrQueue.isEmpty()) {
                         timer.cancel();
+                        double ipc = (float) controller.rs.getNumExecutedInstructions() / CC;
+                        float mispredictionRate = (float) (controller.mispredictionNum / controller.rs.getNumBranchInstrs()) * 100;
+                        System.out.println("mis " + controller.mispredictionNum);
+                        System.out.println("IPC = " + ipc + " \nMisprediction Rate = " + mispredictionRate);
                         System.exit(0);
                     }
                     else {
@@ -38,7 +42,7 @@ public class Main{
                     }
                 }
             }
-        , 1000, 1000);
+        , 10, 10);
     }
 
     

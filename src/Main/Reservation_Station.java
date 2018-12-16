@@ -1030,6 +1030,11 @@ private int get_ready (String type)
                 BEQ_counter + ADD_SUB_ADDI_counter + NAND_counter + MUL_counter);
     }
 
+    public int getNumBranchInstrs() {
+        return BEQ_counter;
+    }
+
+
 void update (Integer rob_indx  , int result )
 {
         
