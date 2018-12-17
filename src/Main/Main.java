@@ -30,9 +30,14 @@ public class Main{
                     if(controller.rob.isEmpty() && controller.instrQueue.isEmpty()) {
                         timer.cancel();
                         double ipc = (float) controller.rs.getNumExecutedInstructions() / CC;
-                        float mispredictionRate = (float) (controller.mispredictionNum / controller.rs.getNumBranchInstrs()) * 100;
-                        System.out.println("mis " + controller.mispredictionNum);
-                        System.out.println("IPC = " + ipc + " \nMisprediction Rate = " + mispredictionRate);
+                        if(controller.rs.getNumBranchInstrs() != 0) {
+                            float mispredictionRate = (float) (controller.mispredictionNum / controller.rs.getNumBranchInstrs()) * 100;
+                            System.out.println("IPC = " + ipc + " \nMisprediction Rate = " + mispredictionRate);
+                        }
+                        else {
+                            System.out.println("IPC = " + ipc + " \nMisprediction Rate = No Branch Instructions were executed");
+                        }
+
                         System.exit(0);
                     }
                     else {
