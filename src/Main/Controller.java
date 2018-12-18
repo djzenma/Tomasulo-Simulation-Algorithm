@@ -225,7 +225,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             if(deqIns != null)
                 pc = deqIns.getPc();
             if(deqIns2 != null)
-                pc2 = deqIns.getPc();
+                pc2 = deqIns2.getPc();
             rs.remove(format, rob, Main.CC, pc, pc2); //store start cycle in rs
             rs.finish_execution(Main.CC, rob);
         }
