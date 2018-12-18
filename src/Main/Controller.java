@@ -25,6 +25,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     private Integer pcPredict;
     private Instruction prevInstr;
     public int mispredictionNum;
+    public static int awaitingInstrIndex;
 
     public Controller() {
         loadBuffer = new LoadBuffer(this);
@@ -36,7 +37,11 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         instrQueue = new InstructionQueue();
         int pc = 0;
         for (int i= 0; i<instrsList.size() ; i++) {
-            instrQueue.enqueue(instrsList.get(i), pc);
+            boolean enqueued = instrQueue.enqueue(instrsList.get(i), pc);
+            if(!enqueued) {
+                awaitingInstrIndex = i;
+                break;
+            }
             pc += 1;
         }
         pcPredict = 0;
@@ -112,7 +117,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                     //System.out.println("check " + instr1.getName());
                     if (instr1.getName().equals(Instruction.LW) || instr1.getName().equals(Instruction.SW)) {
                         if (instr1.getName().equals(Instruction.LW) && loadBuffer.loadIsFree()) {
-                            deqIns[i] = instrQueue.dequeue();
+                            deqIns[i] = instrQueue.dequeue(instrsList, awaitingInstrIndex);
 
                             if(instrQueue.peek() != null && instrQueue.peek().getName().equals(Instruction.BEQ))
                                 prevInstr = deqIns[i];
@@ -121,7 +126,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                             // rob.enqueue(deqIns[i]) ;
                             //fetch(deqIns[i]);
                         } else if (instr1.getName().equals(Instruction.SW) && loadBuffer.storeIsFree()) {
-                            deqIns[i] = instrQueue.dequeue();
+                            deqIns[i] = instrQueue.dequeue(instrsList, awaitingInstrIndex);
 
                             if(instrQueue.peek() != null && instrQueue.peek().getName().equals(Instruction.BEQ))
                                 prevInstr = deqIns[i];
@@ -134,7 +139,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                     }
                     else {
                         //System.out.println("before fetch " + instrQueue.peek().getName());
-                        deqIns[i] = instrQueue.dequeue();
+                        deqIns[i] = instrQueue.dequeue(instrsList, awaitingInstrIndex);
                         if( instrQueue.peek() != null && instrQueue.peek().getName().equals(Instruction.BEQ))
                             prevInstr = deqIns[i];
 
@@ -242,9 +247,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
 
 
     private void refillQueue(int index) {
-        while (!instrQueue.isEmpty()) {
-            instrQueue.dequeue();
-        }
+        instrQueue.dequeueAll();
         for (int i = index; i < instrsList.size(); i++) {
             instrQueue.enqueue(instrsList.get(i), i);
         }

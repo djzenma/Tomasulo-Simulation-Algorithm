@@ -806,7 +806,7 @@ public void finish_execution (int CC , ROB rob)
               else 
               {
                   result =  null ;
-                  rob.set_value(BEQ[i].rob_indx, result , null);
+                  rob.set_value(BEQ[i].rob_indx, null, null);
               }
           }
           else

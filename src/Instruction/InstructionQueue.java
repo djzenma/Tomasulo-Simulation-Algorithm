@@ -1,5 +1,8 @@
 package Instruction;
 
+import Main.Controller;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -24,9 +27,19 @@ public class InstructionQueue {
         }
     }
 
-    public Instruction dequeue() {
+    public Instruction dequeue(ArrayList<Instruction> list, int awaitingIndex) {
         size--;
+        if(size < MAX_CAPACITY && Controller.awaitingInstrIndex < list.size()) {
+            instrQueue.add(list.get(awaitingIndex));
+            Controller.awaitingInstrIndex++;
+        }
         return instrQueue.remove();
+    }
+
+    public void dequeueAll() {
+        while (!instrQueue.isEmpty()) {
+            instrQueue.remove();
+        }
     }
 
     public int getSize() {
