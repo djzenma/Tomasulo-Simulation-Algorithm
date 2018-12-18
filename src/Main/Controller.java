@@ -21,8 +21,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
     private Memory memory;
     public ROB rob;
     public Reservation_Station rs;
-    private int clockCycle;
-    Integer obj = null;
+    private Integer obj = null;
     private Integer pcPredict;
     private Instruction prevInstr;
     public int mispredictionNum;
@@ -40,7 +39,6 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             instrQueue.enqueue(instrsList.get(i), pc);
             pc += 1;
         }
-        clockCycle = 0;
         pcPredict = 0;
         prevInstr = null;
         mispredictionNum = 0;
@@ -81,7 +79,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             System.out.println("Would You Like to Run Cycle_by_Cycle? (1/0)");
             obj = in.nextInt();
         }
-        Integer pcIn = null;
+        Integer pcIn;
 
         /*
          *   Issue
@@ -92,7 +90,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         // }
 
 
-        Instruction instr1 = null;
+        Instruction instr1;
         Instruction[] deqIns = new Instruction[2];
         for (int i = 0; i < 2; i++) {
             deqIns[i] = null;
@@ -131,9 +129,8 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                             loadBufferLogic(deqIns[i]);
                             //rob.enqueue(deqIns[i]) ;
                             //fetch(deqIns[i]);
-                        } else {
-                            // TODO::wait
                         }
+                        // else wait
                     }
                     else {
                         //System.out.println("before fetch " + instrQueue.peek().getName());
@@ -141,7 +138,7 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
                         if( instrQueue.peek() != null && instrQueue.peek().getName().equals(Instruction.BEQ))
                             prevInstr = deqIns[i];
 
-                        if (deqIns[i].getName() == Instruction.BEQ) {
+                        if (deqIns[i].getName().equals(Instruction.BEQ)) {
                             if (deqIns[i].getImm() < 0)
                                 pcPredict = deqIns[i].getPc() + deqIns[i].getImm();
                             else
@@ -169,8 +166,6 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
             if(!rob.isEmpty()) {
                 pcIn = rob.commit(memory);
 
-                boolean found = false;
-                Instruction branchedInstr = null;
                 // Branch
                 if (pcIn != null) {
                     rob.flush();
@@ -245,9 +240,6 @@ public class Controller implements LoadBuffer.MemoryInterface, Main.ClkInterface
         }
     }
 
-    public int getNumInstrs() {
-        return instrsList.size();
-    }
 
     private void refillQueue(int index) {
         while (!instrQueue.isEmpty()) {

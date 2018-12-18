@@ -44,10 +44,7 @@ public  class ROB implements Iterable {
     }
     
      public  boolean check() {
-         if (n <= 6 )
-        return true;
-         else 
-        return false ;
+         return n <= 6;
     }
 
     /**
@@ -68,7 +65,7 @@ public  class ROB implements Iterable {
      */
     public  int enqueue(Instruction inst)
     {
-            if (inst.getName()== Instruction.JMP ||  inst.getName()== Instruction.BEQ || inst.getName()== Instruction.RET)
+            if (inst.getName().equals(Instruction.JMP) || inst.getName().equals(Instruction.BEQ) || inst.getName().equals(Instruction.RET))
             {
                 ROB_NODE oldlast = last;
                 last = new ROB_NODE ();
@@ -82,7 +79,7 @@ public  class ROB implements Iterable {
                 return last_index ;
             }
             else
-                if (inst.getName()== Instruction.JALR)
+                if (inst.getName().equals(Instruction.JALR))
                 {
                     ROB_NODE oldlast = last;
                     last = new ROB_NODE ();
@@ -96,7 +93,7 @@ public  class ROB implements Iterable {
                     return last_index ;
                 }
             else
-                if (inst.getName()== Instruction.SW)
+                if (inst.getName().equals(Instruction.SW))
                 {
                 ROB_NODE oldlast = last;
                 last = new ROB_NODE ();
@@ -193,7 +190,7 @@ public  class ROB implements Iterable {
              {
                     if (current.index == indx)
                     {
-                        if (current.type == Instruction.JALR  || current.type == Instruction.SW )
+                        if (current.type.equals(Instruction.JALR) || current.type.equals(Instruction.SW))
                             current.jalr_value2 = jalrvalue;
 
 
@@ -229,10 +226,10 @@ public  class ROB implements Iterable {
     { Integer PC = null ;
         if (first.ready)
         {
-            if (first.type == Instruction.JMP || first.type == Instruction.RET)
+            if (first.type.equals(Instruction.JMP) || first.type.equals(Instruction.RET))
                 PC = first.value ;
             else
-            if (first.type == Instruction.BEQ)
+            if (first.type.equals(Instruction.BEQ))
             {
                 if (first.value  != null)
                 {
@@ -241,13 +238,13 @@ public  class ROB implements Iterable {
                       
             }
             else 
-            if (first.type == Instruction.JALR)
+            if (first.type.equals(Instruction.JALR))
             {
                 PC = first.jalr_value2;
                 RegFile.write(first.dest, first.value);
             }
             else
-            if (first.type == Instruction.SW)
+            if (first.type.equals(Instruction.SW))
             {
                 try {
                     mem.write(first.jalr_value2, first.value);
