@@ -1,6 +1,6 @@
-# Tomasolo
+# Tomasulo Algorithm
 
-
+# Engineers: Mazen, Bassant
  
 # Implementation
 
